@@ -61,8 +61,8 @@ emit(Regexp *r)
 
 	case Alt:
 		pc->opcode = Split;
-		pc->x = pc;
 		p1 = pc++;
+		p1->x = pc;
 		emit(r->left);
 		pc->opcode = Jmp;
 		p2 = pc++;
