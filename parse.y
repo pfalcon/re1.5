@@ -54,7 +54,7 @@ repeat:
 	}
 |	single '*' '?'
 	{
-		$$ = reg(Quest, $1, nil);
+		$$ = reg(Star, $1, nil);
 		$$->n = 1;
 	}
 |	single '+'
