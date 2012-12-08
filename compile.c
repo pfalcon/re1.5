@@ -35,7 +35,7 @@ count(Regexp *r)
 	case Alt:
 		return 2 + count(r->left) + count(r->right);
 	case Cat:
-		return 2 + count(r->left) + count(r->right);
+		return count(r->left) + count(r->right);
 	case Lit:
 	case Dot:
 		return 1;
