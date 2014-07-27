@@ -4,10 +4,13 @@
 
 #include "regexp.h"
 
+static char code_gen[256];
+static char *prog_start;
+
 typedef struct Thread Thread;
 struct Thread
 {
-	Inst *pc;
+	char *pc;
 	Sub *sub;
 };
 
@@ -19,7 +22,7 @@ struct ThreadList
 };
 
 static Thread
-thread(Inst *pc, Sub *sub)
+thread(char *pc, Sub *sub)
 {
 	Thread t = {pc, sub};
 	return t;
@@ -34,39 +37,57 @@ threadlist(int n)
 static void
 addthread(ThreadList *l, Thread t, char *sp)
 {
-	if(t.pc->gen == gen) {
+	int off;
+	//if(t.pc->gen == gen) {
+	if(code_gen[t.pc - prog_start] == gen) {
 		decref(t.sub);
 		return;	// already on list
 	}
-	t.pc->gen = gen;
+	//t.pc->gen = gen;
+	code_gen[t.pc - prog_start] = gen;
 	
-	switch(t.pc->opcode) {
+	switch(*t.pc) {
 	default:
 		l->t[l->n] = t;
 		l->n++;
 		break;
 	case Jmp:
-		addthread(l, thread(t.pc->x, t.sub), sp);
+		off = (signed char)t.pc[1];
+		t.pc += 2;
+		addthread(l, thread(t.pc + off, t.sub), sp);
 		break;
 	case Split:
-		addthread(l, thread(t.pc->x, incref(t.sub)), sp);
-		addthread(l, thread(t.pc->y, t.sub), sp);
+		off = (signed char)t.pc[1];
+		t.pc += 2;
+		addthread(l, thread(t.pc, incref(t.sub)), sp);
+		addthread(l, thread(t.pc + off, t.sub), sp);
+		break;
+	case RSplit:
+		off = (signed char)t.pc[1];
+		t.pc += 2;
+		addthread(l, thread(t.pc + off, incref(t.sub)), sp);
+		addthread(l, thread(t.pc, t.sub), sp);
 		break;
 	case Save:
-		addthread(l, thread(t.pc+1, update(t.sub, t.pc->n, sp)), sp);
+		off = (unsigned char)t.pc[1];
+		t.pc += 2;
+		addthread(l, thread(t.pc, update(t.sub, off, sp)), sp);
 		break;
 	}
 }
 
 int
-pikevm(Prog *prog, char *input, char **subp, int nsubp)
+pikevm(ByteProg *prog, char *input, char **subp, int nsubp)
 {
 	int i, len;
 	ThreadList *clist, *nlist, *tmp;
-	Inst *pc;
+	char *pc;
 	char *sp;
 	Sub *sub, *matched;
 	
+	prog_start = prog->start;
+	memset(code_gen, 0, sizeof(code_gen));
+
 	matched = nil;	
 	for(i=0; i<nsubp; i++)
 		subp[i] = nil;
@@ -90,9 +111,9 @@ pikevm(Prog *prog, char *input, char **subp, int nsubp)
 			pc = clist->t[i].pc;
 			sub = clist->t[i].sub;
 			// printf(" %d", (int)(pc - prog->start));
-			switch(pc->opcode) {
+			switch(*pc++) {
 			case Char:
-				if(*sp != pc->c) {
+				if(*sp != *pc++) {
 					decref(sub);
 					break;
 				}
@@ -101,7 +122,7 @@ pikevm(Prog *prog, char *input, char **subp, int nsubp)
 					decref(sub);
 					break;
 				}
-				addthread(nlist, thread(pc+1, sub), sp+1);
+				addthread(nlist, thread(pc, sub), sp+1);
 				break;
 			case Match:
 				if(matched)

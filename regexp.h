@@ -13,6 +13,7 @@
 
 typedef struct Regexp Regexp;
 typedef struct Prog Prog;
+typedef struct ByteProg ByteProg;
 typedef struct Inst Inst;
 
 struct Regexp
@@ -48,6 +49,14 @@ struct Prog
 	int len;
 };
 
+struct ByteProg
+{
+	char *start;
+	int bytelen;
+	int len;
+	int sub;
+};
+
 struct Inst
 {
 	int opcode;
@@ -64,6 +73,7 @@ enum	/* Inst.opcode */
 	Match,
 	Jmp,
 	Split,
+	RSplit,
 	Any,
 	Save,
 };
@@ -92,8 +102,11 @@ Sub *copy(Sub*);
 Sub *update(Sub*, int, char*);
 void decref(Sub*);
 
-int backtrack(Prog*, char*, char**, int);
-int pikevm(Prog*, char*, char**, int);
-int recursiveloopprog(Prog*, char*, char**, int);
-int recursiveprog(Prog*, char*, char**, int);
-int thompsonvm(Prog*, char*, char**, int);
+int backtrack(ByteProg*, char*, char**, int);
+int pikevm(ByteProg*, char*, char**, int);
+int recursiveloopprog(ByteProg*, char*, char**, int);
+int recursiveprog(ByteProg*, char*, char**, int);
+int thompsonvm(ByteProg*, char*, char**, int);
+
+ByteProg *compile2code(char *re);
+void dump_code(ByteProg *prog);

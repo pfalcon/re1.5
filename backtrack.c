@@ -7,27 +7,28 @@
 typedef struct Thread Thread;
 struct Thread
 {
-	Inst *pc;
+	char *pc;
 	char *sp;
 	Sub *sub;
 };
 
 static Thread
-thread(Inst *pc, char *sp, Sub *sub)
+thread(char *pc, char *sp, Sub *sub)
 {
 	Thread t = {pc, sp, sub};
 	return t;
 }
 
 int
-backtrack(Prog *prog, char *input, char **subp, int nsubp)
+backtrack(ByteProg *prog, char *input, char **subp, int nsubp)
 {
 	enum { MAX = 1000 };
 	Thread ready[MAX];
 	int i, nready;
-	Inst *pc;
+	char *pc;
 	char *sp;
 	Sub *sub;
+	int off;
 
 	/* queue initial thread */
 	sub = newsub(nsubp);
@@ -44,17 +45,15 @@ backtrack(Prog *prog, char *input, char **subp, int nsubp)
 		sub = ready[nready].sub;
 		assert(sub->ref > 0);
 		for(;;) {
-			switch(pc->opcode) {
+			switch(*pc++) {
 			case Char:
-				if(*sp != pc->c)
+				if(*sp != *pc++)
 					goto Dead;
-				pc++;
 				sp++;
 				continue;
 			case Any:
 				if(*sp == 0)
 					goto Dead;
-				pc++;
 				sp++;
 				continue;
 			case Match:
@@ -63,17 +62,26 @@ backtrack(Prog *prog, char *input, char **subp, int nsubp)
 				decref(sub);
 				return 1;
 			case Jmp:
-				pc = pc->x;
+				off = (signed char)*pc++;
+				pc = pc + off;
 				continue;
 			case Split:
 				if(nready >= MAX)
 					fatal("backtrack overflow");
-				ready[nready++] = thread(pc->y, sp, incref(sub));
-				pc = pc->x;	/* continue current thread */
+				off = (signed char)*pc++;
+				ready[nready++] = thread(pc + off, sp, incref(sub));
+//				pc = pc->x;	/* continue current thread */
+				continue;
+			case RSplit:
+				if(nready >= MAX)
+					fatal("backtrack overflow");
+				off = (signed char)*pc++;
+				ready[nready++] = thread(pc, sp, incref(sub));
+				pc = pc + off;
 				continue;
 			case Save:
-				sub = update(sub, pc->n, sp);
-				pc++;
+				off = (unsigned char)*pc++;
+				sub = update(sub, off, sp);
 				continue;
 			}
 		}

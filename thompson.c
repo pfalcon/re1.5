@@ -4,10 +4,13 @@
 
 #include "regexp.h"
 
+static char code_gen[256];
+static char *prog_start;
+
 typedef struct Thread Thread;
 struct Thread
 {
-	Inst *pc;
+	char *pc;
 };
 
 typedef struct ThreadList ThreadList;
@@ -18,7 +21,7 @@ struct ThreadList
 };
 
 static Thread
-thread(Inst *pc)
+thread(char *pc)
 {
 	Thread t = {pc};
 	return t;
@@ -33,35 +36,53 @@ threadlist(int n)
 static void
 addthread(ThreadList *l, Thread t)
 {
-	if(t.pc->gen == gen)
+	int off;
+//	if(t.pc->gen == gen)
+	if(code_gen[t.pc - prog_start] == gen)
 		return;	// already on list
 
-	t.pc->gen = gen;
+	//t.pc->gen = gen;
+	code_gen[t.pc - prog_start] = gen;
 	l->t[l->n] = t;
 	l->n++;
 	
-	switch(t.pc->opcode) {
+	switch(*t.pc) {
 	case Jmp:
-		addthread(l, thread(t.pc->x));
+		off = (signed char)t.pc[1];
+		t.pc += 2;
+		addthread(l, thread(t.pc + off));
 		break;
 	case Split:
-		addthread(l, thread(t.pc->x));
-		addthread(l, thread(t.pc->y));
+		off = (signed char)t.pc[1];
+		t.pc += 2;
+		addthread(l, thread(t.pc));
+		addthread(l, thread(t.pc + off));
+		break;
+	case RSplit:
+		off = (signed char)t.pc[1];
+		t.pc += 2;
+		addthread(l, thread(t.pc + off));
+		addthread(l, thread(t.pc));
 		break;
 	case Save:
-		addthread(l, thread(t.pc+1));
+		off = (unsigned char)t.pc[1];
+		t.pc += 2;
+		addthread(l, thread(t.pc));
 		break;
 	}
 }
 
 int
-thompsonvm(Prog *prog, char *input, char **subp, int nsubp)
+thompsonvm(ByteProg *prog, char *input, char **subp, int nsubp)
 {
 	int i, len, matched;
 	ThreadList *clist, *nlist, *tmp;
-	Inst *pc;
+	char *pc;
 	char *sp;
-	
+
+	prog_start = prog->start;
+	memset(code_gen, 0, sizeof(code_gen));
+
 	for(i=0; i<nsubp; i++)
 		subp[i] = nil;
 
@@ -82,14 +103,14 @@ thompsonvm(Prog *prog, char *input, char **subp, int nsubp)
 		for(i=0; i<clist->n; i++) {
 			pc = clist->t[i].pc;
 			// printf(" %d", (int)(pc - prog->start));
-			switch(pc->opcode) {
+			switch(*pc++) {
 			case Char:
-				if(*sp != pc->c)
+				if(*sp != *pc++)
 					break;
 			case Any:
 				if(*sp == 0)
 					break;
-				addthread(nlist, thread(pc+1));
+				addthread(nlist, thread(pc));
 				break;
 			case Match:
 				if(nsubp >= 2)

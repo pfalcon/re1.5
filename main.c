@@ -6,7 +6,7 @@
 
 struct {
 	char *name;
-	int (*fn)(Prog*, char*, char**, int);
+	int (*fn)(ByteProg*, char*, char**, int);
 } tab[] = {
 	"recursive", recursiveprog,
 	"recursiveloop", recursiveloopprog,
@@ -39,13 +39,16 @@ main(int argc, char **argv)
 
 	prog = compile(re);
 	printprog(prog);
+	printf("=============\n");
+	ByteProg *code = compile2code(argv[1]);
+	dump_code(code);
 
 	for(i=2; i<argc; i++) {
 		printf("#%d %s\n", i, argv[i]);
 		for(j=0; j<nelem(tab); j++) {
 			printf("%s ", tab[j].name);
 			memset(sub, 0, sizeof sub);
-			if(!tab[j].fn(prog, argv[i], sub, nelem(sub))) {
+			if(!tab[j].fn(code, argv[i], sub, nelem(sub))) {
 				printf("-no match-\n");
 				continue;
 			}
