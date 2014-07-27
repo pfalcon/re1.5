@@ -15,6 +15,7 @@ OFILES=\
 	sub.o\
 	thompson.o\
 	y.tab.o\
+	compile2code.o
 
 HFILES=\
 	regexp.h\
