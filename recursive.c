@@ -56,6 +56,8 @@ recursiveloop(Inst *pc, char *sp, char **subp, int nsubp)
 			if(*sp != pc->c)
 				return 0;
 		case Any:
+			if(*sp == 0)
+				return 0;
 			pc++;
 			sp++;
 			continue;
