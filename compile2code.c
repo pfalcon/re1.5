@@ -15,27 +15,19 @@ int size_code(char *re)
     for (; *re; re++) {
         switch (*re) {
         default:
+        case '?':
+        case '+':
             pc += 2;
             break;
         case '.':
             pc++;
             break;
+        case '*':
+        case '|':
         case '(':
             pc += 4;
             break;
         case ')':
-            break;
-        case '?':
-            pc += 2;
-            break;
-        case '*':
-            pc += 4;
-            break;
-        case '+':
-            pc += 2;
-            break;
-        case '|':
-            pc += 4;
             break;
         }
     }
