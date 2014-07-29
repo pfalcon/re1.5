@@ -19,7 +19,6 @@ OFILES=\
 
 HFILES=\
 	regexp.h\
-	y.tab.h\
 
 re: $(OFILES)
 	$(CC) -o re $(OFILES)
