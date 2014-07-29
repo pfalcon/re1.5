@@ -159,6 +159,7 @@ parse(char *s)
 		yyerror("parser nil");
 		
 	r = reg(Paren, parsed_regexp, nil);	// $0 parens
+	return r;
 	dotstar = reg(Star, reg(Dot, nil, nil), nil);
 	dotstar->n = 1;	// non-greedy
 	return reg(Cat, dotstar, r);
