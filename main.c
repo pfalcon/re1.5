@@ -28,7 +28,6 @@ main(int argc, char **argv)
 	int i, j, k, l;
 	Regexp *re;
 	Prog *prog;
-	char *sub[MAXSUB];
 
 	if(argc < 2)
 		usage();
@@ -43,17 +42,19 @@ main(int argc, char **argv)
 	ByteProg *code = compile2code(argv[1]);
 	dump_code(code);
 
+	int sub_els = (code->sub + 1) * 2;
+	char *sub[sub_els];
 	for(i=2; i<argc; i++) {
 		printf("#%d %s\n", i, argv[i]);
 		for(j=0; j<nelem(tab); j++) {
 			printf("%s ", tab[j].name);
-			memset(sub, 0, sizeof sub);
-			if(!tab[j].fn(code, argv[i], sub, nelem(sub))) {
+			memset(sub, 0, sub_els * sizeof sub[0]);
+			if(!tab[j].fn(code, argv[i], sub, sub_els)) {
 				printf("-no match-\n");
 				continue;
 			}
 			printf("match");
-			for(k=MAXSUB; k>0; k--)
+			for(k=sub_els; k>0; k--)
 				if(sub[k-1])
 					break;
 			for(l=0; l<k; l+=2) {
