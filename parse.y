@@ -125,19 +125,6 @@ yylex(void)
 	return CHAR;
 }
 
-void
-fatal(char *fmt, ...)
-{
-	va_list arg;
-	
-	va_start(arg, fmt);
-	fprintf(stderr, "fatal error: ");
-	vfprintf(stderr, fmt, arg);
-	fprintf(stderr, "\n");
-	va_end(arg);
-	exit(2);
-}
-
 static void
 yyerror(char *s)
 {
@@ -164,18 +151,6 @@ parse(char *s)
 	dotstar->n = 1;	// non-greedy
 	return reg(Cat, dotstar, r);
 }
-
-void*
-mal(int n)
-{
-	void *v;
-	
-	v = malloc(n);
-	if(v == nil)
-		fatal("out of memory");
-	memset(v, 0, n);
-	return v;
-}	
 
 Regexp*
 reg(int type, Regexp *left, Regexp *right)
