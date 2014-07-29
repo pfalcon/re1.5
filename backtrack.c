@@ -20,7 +20,7 @@ thread(char *pc, char *sp, Sub *sub)
 }
 
 int
-backtrack(ByteProg *prog, char *input, char **subp, int nsubp)
+backtrack(ByteProg *prog, char *input, char *end, char **subp, int nsubp)
 {
 	enum { MAX = 1000 };
 	Thread ready[MAX];
@@ -45,15 +45,16 @@ backtrack(ByteProg *prog, char *input, char **subp, int nsubp)
 		sub = ready[nready].sub;
 		assert(sub->ref > 0);
 		for(;;) {
+			if(inst_is_consumer(*pc)) {
+				// If we need to match a character, but there's none left, it's fail
+				if(sp >= end)
+					goto Dead;
+			}
 			switch(*pc++) {
 			case Char:
 				if(*sp != *pc++)
 					goto Dead;
-				sp++;
-				continue;
 			case Any:
-				if(*sp == 0)
-					goto Dead;
 				sp++;
 				continue;
 			case Match:

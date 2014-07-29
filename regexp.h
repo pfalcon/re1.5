@@ -110,7 +110,7 @@ Sub *copy(Sub*);
 Sub *update(Sub*, int, char*);
 void decref(Sub*);
 
-int backtrack(ByteProg*, char*, char**, int);
+int backtrack(ByteProg*, char*, char *, char**, int);
 int pikevm(ByteProg*, char*, char**, int);
 int recursiveloopprog(ByteProg*, char*, char *, char**, int);
 int recursiveprog(ByteProg*, char*, char *, char**, int);
