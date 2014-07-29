@@ -4,9 +4,6 @@
 
 #include "regexp.h"
 
-static char code_gen[256];
-static char *prog_start;
-
 typedef struct Thread Thread;
 struct Thread
 {
@@ -38,15 +35,13 @@ static void
 addthread(ThreadList *l, Thread t, char *sp)
 {
 	int off;
-	//if(t.pc->gen == gen) {
-	if(code_gen[t.pc - prog_start] == gen) {
+	if(*t.pc & 0x80) {
 		decref(t.sub);
 		return;	// already on list
 	}
-	//t.pc->gen = gen;
-	code_gen[t.pc - prog_start] = gen;
+	*t.pc |= 0x80;
 	
-	switch(*t.pc) {
+	switch(*t.pc & 0x7f) {
 	default:
 		l->t[l->n] = t;
 		l->n++;
@@ -84,9 +79,6 @@ pikevm(ByteProg *prog, char *input, char **subp, int nsubp)
 	char *pc;
 	char *sp;
 	Sub *sub, *matched;
-	
-	prog_start = prog->start;
-	memset(code_gen, 0, sizeof(code_gen));
 
 	matched = nil;	
 	for(i=0; i<nsubp; i++)
@@ -99,19 +91,19 @@ pikevm(ByteProg *prog, char *input, char **subp, int nsubp)
 	clist = threadlist(len);
 	nlist = threadlist(len);
 	
-	gen++;
+	cleanmarks(prog);
 	addthread(clist, thread(prog->start, sub), input);
 	matched = 0;
 	for(sp=input;; sp++) {
 		if(clist->n == 0)
 			break;
 		// printf("%d(%02x).", (int)(sp - input), *sp & 0xFF);
-		gen++;
+		cleanmarks(prog);
 		for(i=0; i<clist->n; i++) {
 			pc = clist->t[i].pc;
 			sub = clist->t[i].sub;
 			// printf(" %d", (int)(pc - prog->start));
-			switch(*pc++) {
+			switch(*pc++ & 0x7f) {
 			case Char:
 				if(*sp != *pc++) {
 					decref(sub);
