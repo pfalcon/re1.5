@@ -32,6 +32,7 @@ main(int argc, char **argv)
 	if(argc < 2)
 		usage();
 	
+	#ifdef DEBUG
 	re = parse(argv[1]);
 	printre(re);
 	printf("\n");
@@ -39,6 +40,7 @@ main(int argc, char **argv)
 	prog = compile(re);
 	printprog(prog);
 	printf("=============\n");
+	#endif
 	ByteProg *code = compile2code(argv[1]);
 	#ifdef DEBUG
 	dump_code(code);

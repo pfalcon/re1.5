@@ -128,7 +128,9 @@ ByteProg *compile2code(char *re)
 {
     static ByteProg prog;
     int sz = size_code(re);
+    #ifdef DEBUG
     printf("size_code: Bytes: %d\n", sz);
+    #endif
 
     prog.start = malloc(sz);
     prog.len = 0;
