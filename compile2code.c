@@ -151,6 +151,25 @@ ByteProg *compile2code(char *re)
     return &prog;
 }
 
+void
+cleanmarks(ByteProg *prog)
+{
+       char *pc = prog->start;
+       char *end = pc + prog->bytelen;
+       while (pc < end) {
+               *pc &= 0x7f;
+               switch (*pc) {
+               case Jmp:
+               case Split:
+               case RSplit:
+               case Save:
+               case Char:
+                       pc++;
+               }
+               pc++;
+       }
+}
+
 #ifdef DEBUG
 void dump_code(ByteProg *prog)
 {

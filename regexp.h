@@ -110,3 +110,4 @@ int thompsonvm(ByteProg*, char*, char**, int);
 
 ByteProg *compile2code(char *re);
 void dump_code(ByteProg *prog);
+void cleanmarks(ByteProg *prog);
