@@ -12,6 +12,7 @@ OFILES=\
 	main.o\
 	pike.o\
 	recursive.o\
+	recursiveloop.o\
 	sub.o\
 	thompson.o\
 	y.tab.o\
