@@ -68,7 +68,7 @@ addthread(ThreadList *l, Thread t)
 }
 
 int
-thompsonvm(ByteProg *prog, char *input, char **subp, int nsubp)
+thompsonvm(ByteProg *prog, char *input, char *end, char **subp, int nsubp)
 {
 	int i, len, matched;
 	ThreadList *clist, *nlist, *tmp;
@@ -95,13 +95,17 @@ thompsonvm(ByteProg *prog, char *input, char **subp, int nsubp)
 		for(i=0; i<clist->n; i++) {
 			pc = clist->t[i].pc;
 			// printf(" %d", (int)(pc - prog->start));
+			if (inst_is_consumer(*pc & 0x7f)) {
+				// If we need to match a character, but there's none left,
+				// it's fail (we don't schedule current thread for continuation)
+				if(sp >= end)
+					continue;
+			}
 			switch(*pc++ & 0x7f) {
 			case Char:
 				if(*sp != *pc++)
 					break;
 			case Any:
-				if(*sp == 0)
-					break;
 				addthread(nlist, thread(pc));
 				break;
 			case Match:

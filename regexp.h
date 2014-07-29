@@ -114,7 +114,7 @@ int backtrack(ByteProg*, char*, char *, char**, int);
 int pikevm(ByteProg*, char*, char**, int);
 int recursiveloopprog(ByteProg*, char*, char *, char**, int);
 int recursiveprog(ByteProg*, char*, char *, char**, int);
-int thompsonvm(ByteProg*, char*, char**, int);
+int thompsonvm(ByteProg*, char*, char*, char**, int);
 
 ByteProg *compile2code(char *re);
 void dump_code(ByteProg *prog);
