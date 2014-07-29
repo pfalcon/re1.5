@@ -3,7 +3,7 @@
 # license that can be found in the LICENSE file.
 
 CC=gcc
-CFLAGS=-ggdb -Wall -O2
+CFLAGS=-ggdb -Wall -Os
 
 TARG=re
 OFILES=\
