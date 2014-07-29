@@ -151,7 +151,7 @@ ByteProg *compile2code(char *re)
     return &prog;
 }
 
-
+#ifdef DEBUG
 void dump_code(ByteProg *prog)
 {
     int pc = 0;
@@ -189,6 +189,7 @@ void dump_code(ByteProg *prog)
     }
     printf("Bytes: %d, insts: %d\n", prog->bytelen, prog->len);
 }
+#endif
 
 #if 0
 int main(int argc, char *argv[])

@@ -40,7 +40,9 @@ main(int argc, char **argv)
 	printprog(prog);
 	printf("=============\n");
 	ByteProg *code = compile2code(argv[1]);
+	#ifdef DEBUG
 	dump_code(code);
+	#endif
 
 	int sub_els = (code->sub + 1) * 2;
 	char *sub[sub_els];
