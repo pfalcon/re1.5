@@ -4,9 +4,6 @@
 
 #include "regexp.h"
 
-static char code_gen[256];
-static char *prog_start;
-
 typedef struct Thread Thread;
 struct Thread
 {
@@ -37,16 +34,14 @@ static void
 addthread(ThreadList *l, Thread t)
 {
 	int off;
-//	if(t.pc->gen == gen)
-	if(code_gen[t.pc - prog_start] == gen)
+	if(*t.pc & 0x80)
 		return;	// already on list
 
-	//t.pc->gen = gen;
-	code_gen[t.pc - prog_start] = gen;
+	*t.pc |= 0x80;
 	l->t[l->n] = t;
 	l->n++;
 	
-	switch(*t.pc) {
+	switch(*t.pc & 0x7f) {
 	case Jmp:
 		off = (signed char)t.pc[1];
 		t.pc += 2;
@@ -80,9 +75,6 @@ thompsonvm(ByteProg *prog, char *input, char **subp, int nsubp)
 	char *pc;
 	char *sp;
 
-	prog_start = prog->start;
-	memset(code_gen, 0, sizeof(code_gen));
-
 	for(i=0; i<nsubp; i++)
 		subp[i] = nil;
 
@@ -92,18 +84,18 @@ thompsonvm(ByteProg *prog, char *input, char **subp, int nsubp)
 	
 	if(nsubp >= 1)
 		subp[0] = input;
-	gen++;
+	cleanmarks(prog);
 	addthread(clist, thread(prog->start));
 	matched = 0;
 	for(sp=input;; sp++) {
 		if(clist->n == 0)
 			break;
 		// printf("%d(%02x).", (int)(sp - input), *sp & 0xFF);
-		gen++;
+		cleanmarks(prog);
 		for(i=0; i<clist->n; i++) {
 			pc = clist->t[i].pc;
 			// printf(" %d", (int)(pc - prog->start));
-			switch(*pc++) {
+			switch(*pc++ & 0x7f) {
 			case Char:
 				if(*sp != *pc++)
 					break;
