@@ -69,14 +69,22 @@ struct Inst
 
 enum	/* Inst.opcode */
 {
-	Char = 1,
-	Match,
-	Jmp,
+	// Instructions which consume input bytes (and thus fail if none left)
+	CONSUMERS = 1,
+	Char = CONSUMERS,
+	Any,
+	// Instructions which take relative offset as arg
+	JUMPS = 0x60,
+	Jmp = JUMPS,
 	Split,
 	RSplit,
-	Any,
-	Save,
+	// Other (special) instructions
+	Save = 0x7e,
+	Match = 0x7f,
 };
+
+#define inst_is_consumer(inst) ((inst) < JUMPS)
+#define inst_is_jump(inst) ((inst) & 0x70 == JUMPS)
 
 Prog *compile(Regexp*);
 void printprog(Prog*);
