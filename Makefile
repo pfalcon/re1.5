@@ -15,8 +15,9 @@ OFILES=\
 	recursiveloop.o\
 	sub.o\
 	thompson.o\
+	compile2code.o\
+	util.o\
 	y.tab.o\
-	compile2code.o
 
 HFILES=\
 	regexp.h\
