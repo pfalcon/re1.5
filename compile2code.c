@@ -1,7 +1,5 @@
 #include "regexp.h"
 
-char code[256];
-
 void insert_code(char *code, int at, int num, int *pc)
 {
     memmove(code + at + num, code + at, *pc - at);
@@ -10,10 +8,46 @@ void insert_code(char *code, int at, int num, int *pc)
 
 #define REL(at, to) (to - at - 2)
 
+int size_code(char *re)
+{
+    int pc = 5; // Save 0, Save 1, Match
+
+    for (; *re; re++) {
+        switch (*re) {
+        default:
+            pc += 2;
+            break;
+        case '.':
+            pc++;
+            break;
+        case '(':
+            pc += 4;
+            break;
+        case ')':
+            break;
+        case '?':
+            pc += 2;
+            break;
+        case '*':
+            pc += 4;
+            break;
+        case '+':
+            pc += 2;
+            break;
+        case '|':
+            pc += 4;
+            break;
+        }
+    }
+
+    return pc;
+}
+
 #define EMIT(at, byte) code[at] = byte
 
 char *_compile2code(char *re, ByteProg *prog)
 {
+    char *code = prog->start;
     int pc = prog->bytelen;
     int start = pc;
     int term = pc;
@@ -93,9 +127,13 @@ char *_compile2code(char *re, ByteProg *prog)
 ByteProg *compile2code(char *re)
 {
     static ByteProg prog;
-    prog.start = code;
+    int sz = size_code(re);
+    printf("size_code: Bytes: %d\n", sz);
+
+    prog.start = malloc(sz);
     prog.len = 0;
     prog.bytelen = 0;
+    prog.sub = 0;
 
     prog.start[prog.bytelen++] = Save;
     prog.start[prog.bytelen++] = 0;
