@@ -72,7 +72,7 @@ addthread(ThreadList *l, Thread t, char *sp)
 }
 
 int
-pikevm(ByteProg *prog, char *input, char **subp, int nsubp)
+pikevm(ByteProg *prog, char *input, char *end, char **subp, int nsubp)
 {
 	int i, len;
 	ThreadList *clist, *nlist, *tmp;
@@ -103,6 +103,14 @@ pikevm(ByteProg *prog, char *input, char **subp, int nsubp)
 			pc = clist->t[i].pc;
 			sub = clist->t[i].sub;
 			// printf(" %d", (int)(pc - prog->start));
+			if (inst_is_consumer(*pc & 0x7f)) {
+				// If we need to match a character, but there's none left,
+				// it's fail (we don't schedule current thread for continuation)
+				if(sp >= end) {
+					decref(sub);
+					continue;
+				}
+			}
 			switch(*pc++ & 0x7f) {
 			case Char:
 				if(*sp != *pc++) {
@@ -110,10 +118,6 @@ pikevm(ByteProg *prog, char *input, char **subp, int nsubp)
 					break;
 				}
 			case Any:
-				if(*sp == 0) {
-					decref(sub);
-					break;
-				}
 				addthread(nlist, thread(pc, sub), sp+1);
 				break;
 			case Match:
