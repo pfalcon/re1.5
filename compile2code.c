@@ -14,6 +14,8 @@ int size_code(char *re)
 
     for (; *re; re++) {
         switch (*re) {
+        case '\\':
+            re++;
         default:
         case '?':
         case '+':
@@ -47,6 +49,8 @@ char *_compile2code(char *re, ByteProg *prog)
 
     for (; *re && *re != ')'; re++) {
         switch (*re) {
+        case '\\':
+            re++;
         default:
             term = pc;
             EMIT(pc++, Char);
