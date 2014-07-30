@@ -22,6 +22,8 @@ int size_code(char *re)
             pc += 2;
             break;
         case '.':
+        case '^':
+        case '$':
             pc++;
             break;
         case '*':
@@ -109,6 +111,14 @@ char *_compile2code(char *re, ByteProg *prog)
             EMIT(start, Split);
             EMIT(start + 1, REL(start, pc));
             prog->len += 2;
+            break;
+        case '^':
+            EMIT(pc++, Bol);
+            prog->len++;
+            break;
+        case '$':
+            EMIT(pc++, Eol);
+            prog->len++;
             break;
         }
     }
@@ -202,6 +212,13 @@ void dump_code(ByteProg *prog)
                         break;
                 case Save:
                         printf("save %d\n", (unsigned char)code[pc++]);
+                        break;
+                case Bol:
+                        printf("assert bol\n");
+                        break;
+                case Eol:
+                        printf("assert eol\n");
+                        break;
                 }
     }
     printf("Bytes: %d, insts: %d\n", prog->bytelen, prog->len);

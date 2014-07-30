@@ -73,6 +73,9 @@ enum	/* Inst.opcode */
 	CONSUMERS = 1,
 	Char = CONSUMERS,
 	Any,
+	ASSERTS = 0x50,
+	Bol = ASSERTS,
+	Eol,
 	// Instructions which take relative offset as arg
 	JUMPS = 0x60,
 	Jmp = JUMPS,
@@ -83,7 +86,7 @@ enum	/* Inst.opcode */
 	Match = 0x7f,
 };
 
-#define inst_is_consumer(inst) ((inst) < JUMPS)
+#define inst_is_consumer(inst) ((inst) < ASSERTS)
 #define inst_is_jump(inst) ((inst) & 0x70 == JUMPS)
 
 Prog *compile(Regexp*);
