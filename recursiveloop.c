@@ -5,7 +5,7 @@
 #include "regexp.h"
 
 int
-recursiveloop(char *pc, char *sp, char *end, char **subp, int nsubp)
+recursiveloop(char *pc, char *sp, Subject *input, char **subp, int nsubp)
 {
 	char *old;
 	int off;
@@ -13,7 +13,7 @@ recursiveloop(char *pc, char *sp, char *end, char **subp, int nsubp)
 	for(;;) {
 		if(inst_is_consumer(*pc)) {
 			// If we need to match a character, but there's none left, it's fail
-			if(sp >= end)
+			if(sp >= input->end)
 				return 0;
 		}
 		switch(*pc++) {
@@ -31,13 +31,13 @@ recursiveloop(char *pc, char *sp, char *end, char **subp, int nsubp)
 			continue;
 		case Split:
 			off = (signed char)*pc++;
-			if(recursiveloop(pc, sp, end, subp, nsubp))
+			if(recursiveloop(pc, sp, input, subp, nsubp))
 				return 1;
 			pc = pc + off;
 			continue;
 		case RSplit:
 			off = (signed char)*pc++;
-			if(recursiveloop(pc + off, sp, end, subp, nsubp))
+			if(recursiveloop(pc + off, sp, input, subp, nsubp))
 				return 1;
 			continue;
 		case Save:
@@ -47,17 +47,25 @@ recursiveloop(char *pc, char *sp, char *end, char **subp, int nsubp)
 			}
 			old = subp[off];
 			subp[off] = sp;
-			if(recursiveloop(pc, sp, end, subp, nsubp))
+			if(recursiveloop(pc, sp, input, subp, nsubp))
 				return 1;
 			subp[off] = old;
 			return 0;
+		case Bol:
+			if(sp != input->begin)
+				return 0;
+			continue;
+		case Eol:
+			if(sp != input->end)
+				return 0;
+			continue;
 		}
 		fatal("recursiveloop");
 	}
 }
 
 int
-recursiveloopprog(ByteProg *prog, char *input, char *end, char **subp, int nsubp)
+recursiveloopprog(ByteProg *prog, Subject *input, char **subp, int nsubp)
 {
-	return recursiveloop(prog->start, input, end, subp, nsubp);
+	return recursiveloop(prog->start, input->begin, input, subp, nsubp);
 }
