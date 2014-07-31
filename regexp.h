@@ -15,6 +15,7 @@ typedef struct Regexp Regexp;
 typedef struct Prog Prog;
 typedef struct ByteProg ByteProg;
 typedef struct Inst Inst;
+typedef struct Subject Subject;
 
 struct Regexp
 {
@@ -112,6 +113,11 @@ Sub *incref(Sub*);
 Sub *copy(Sub*);
 Sub *update(Sub*, int, char*);
 void decref(Sub*);
+
+struct Subject {
+	char *begin;
+	char *end;
+};
 
 int backtrack(ByteProg*, char*, char *, char**, int);
 int pikevm(ByteProg*, char*, char*, char**, int);
