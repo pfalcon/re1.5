@@ -119,7 +119,7 @@ struct Subject {
 	char *end;
 };
 
-int backtrack(ByteProg*, char*, char *, char**, int);
+int backtrack(ByteProg*, Subject*, char**, int);
 int pikevm(ByteProg*, char*, char*, char**, int);
 int recursiveloopprog(ByteProg*, Subject*, char**, int);
 int recursiveprog(ByteProg*, Subject*, char**, int);

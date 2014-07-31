@@ -20,7 +20,7 @@ thread(char *pc, char *sp, Sub *sub)
 }
 
 int
-backtrack(ByteProg *prog, char *input, char *end, char **subp, int nsubp)
+backtrack(ByteProg *prog, Subject *input, char **subp, int nsubp)
 {
 	enum { MAX = 1000 };
 	Thread ready[MAX];
@@ -34,7 +34,7 @@ backtrack(ByteProg *prog, char *input, char *end, char **subp, int nsubp)
 	sub = newsub(nsubp);
 	for(i=0; i<nsubp; i++)
 		sub->sub[i] = nil;
-	ready[0] = thread(prog->start, input, sub);
+	ready[0] = thread(prog->start, input->begin, sub);
 	nready = 1;
 
 	/* run threads in stack order */
@@ -47,7 +47,7 @@ backtrack(ByteProg *prog, char *input, char *end, char **subp, int nsubp)
 		for(;;) {
 			if(inst_is_consumer(*pc)) {
 				// If we need to match a character, but there's none left, it's fail
-				if(sp >= end)
+				if(sp >= input->end)
 					goto Dead;
 			}
 			switch(*pc++) {
@@ -83,6 +83,14 @@ backtrack(ByteProg *prog, char *input, char *end, char **subp, int nsubp)
 			case Save:
 				off = (unsigned char)*pc++;
 				sub = update(sub, off, sp);
+				continue;
+			case Bol:
+				if(sp != input->begin)
+					goto Dead;
+				continue;
+			case Eol:
+				if(sp != input->end)
+					goto Dead;
 				continue;
 			}
 		}
