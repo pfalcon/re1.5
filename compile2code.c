@@ -183,7 +183,7 @@ void dump_code(ByteProg *prog)
 {
     int pc = 0;
     char *code = prog->start;
-    while (code[pc]) {
+    while (pc < prog->bytelen) {
                 printf("%2d: ", pc);
                 switch(code[pc++]) {
                 default:
