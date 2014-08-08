@@ -32,7 +32,7 @@ threadlist(int n)
 }
 
 static void
-addthread(ThreadList *l, Thread t, char *sp)
+addthread(ThreadList *l, Thread t, Subject *input, char *sp)
 {
 	int off;
 	if(*t.pc & 0x80) {
@@ -49,30 +49,38 @@ addthread(ThreadList *l, Thread t, char *sp)
 	case Jmp:
 		off = (signed char)t.pc[1];
 		t.pc += 2;
-		addthread(l, thread(t.pc + off, t.sub), sp);
+		addthread(l, thread(t.pc + off, t.sub), input, sp);
 		break;
 	case Split:
 		off = (signed char)t.pc[1];
 		t.pc += 2;
-		addthread(l, thread(t.pc, incref(t.sub)), sp);
-		addthread(l, thread(t.pc + off, t.sub), sp);
+		addthread(l, thread(t.pc, incref(t.sub)), input, sp);
+		addthread(l, thread(t.pc + off, t.sub), input, sp);
 		break;
 	case RSplit:
 		off = (signed char)t.pc[1];
 		t.pc += 2;
-		addthread(l, thread(t.pc + off, incref(t.sub)), sp);
-		addthread(l, thread(t.pc, t.sub), sp);
+		addthread(l, thread(t.pc + off, incref(t.sub)), input, sp);
+		addthread(l, thread(t.pc, t.sub), input, sp);
 		break;
 	case Save:
 		off = (unsigned char)t.pc[1];
 		t.pc += 2;
-		addthread(l, thread(t.pc, update(t.sub, off, sp)), sp);
+		addthread(l, thread(t.pc, update(t.sub, off, sp)), input, sp);
+		break;
+	case Bol:
+		if(sp == input->begin)
+			addthread(l, thread(t.pc + 1, t.sub), input, sp);
+		break;
+	case Eol:
+		if(sp == input->end)
+			addthread(l, thread(t.pc + 1, t.sub), input, sp);
 		break;
 	}
 }
 
 int
-pikevm(ByteProg *prog, char *input, char *end, char **subp, int nsubp)
+pikevm(ByteProg *prog, Subject *input, char **subp, int nsubp)
 {
 	int i, len;
 	ThreadList *clist, *nlist, *tmp;
@@ -92,12 +100,12 @@ pikevm(ByteProg *prog, char *input, char *end, char **subp, int nsubp)
 	nlist = threadlist(len);
 	
 	cleanmarks(prog);
-	addthread(clist, thread(prog->start, sub), input);
+	addthread(clist, thread(prog->start, sub), input, input->begin);
 	matched = 0;
-	for(sp=input;; sp++) {
+	for(sp=input->begin;; sp++) {
 		if(clist->n == 0)
 			break;
-		// printf("%d(%02x).", (int)(sp - input), *sp & 0xFF);
+		// printf("%d(%02x).", (int)(sp - input->begin), *sp & 0xFF);
 		cleanmarks(prog);
 		for(i=0; i<clist->n; i++) {
 			pc = clist->t[i].pc;
@@ -106,7 +114,7 @@ pikevm(ByteProg *prog, char *input, char *end, char **subp, int nsubp)
 			if (inst_is_consumer(*pc & 0x7f)) {
 				// If we need to match a character, but there's none left,
 				// it's fail (we don't schedule current thread for continuation)
-				if(sp >= end) {
+				if(sp >= input->end) {
 					decref(sub);
 					continue;
 				}
@@ -118,7 +126,7 @@ pikevm(ByteProg *prog, char *input, char *end, char **subp, int nsubp)
 					break;
 				}
 			case Any:
-				addthread(nlist, thread(pc, sub), sp+1);
+				addthread(nlist, thread(pc, sub), input, sp+1);
 				break;
 			case Match:
 				if(matched)
@@ -139,8 +147,8 @@ pikevm(ByteProg *prog, char *input, char *end, char **subp, int nsubp)
 		clist = nlist;
 		nlist = tmp;
 		nlist->n = 0;
-		if(*sp == '\0')
-			break;
+		//if(*sp == '\0')
+		//	break;
 	}
 	if(matched) {
 		for(i=0; i<nsubp; i++)
