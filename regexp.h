@@ -123,7 +123,7 @@ int backtrack(ByteProg*, Subject*, char**, int);
 int pikevm(ByteProg*, char*, char*, char**, int);
 int recursiveloopprog(ByteProg*, Subject*, char**, int);
 int recursiveprog(ByteProg*, Subject*, char**, int);
-int thompsonvm(ByteProg*, char*, char*, char**, int);
+int thompsonvm(ByteProg*, Subject*, char**, int);
 
 ByteProg *compile2code(char *re);
 void dump_code(ByteProg *prog);

@@ -31,7 +31,7 @@ threadlist(int n)
 }
 
 static void
-addthread(ThreadList *l, Thread t)
+addthread(ThreadList *l, Thread t, Subject *input, char *sp)
 {
 	int off;
 	if(*t.pc & 0x80)
@@ -45,30 +45,38 @@ addthread(ThreadList *l, Thread t)
 	case Jmp:
 		off = (signed char)t.pc[1];
 		t.pc += 2;
-		addthread(l, thread(t.pc + off));
+		addthread(l, thread(t.pc + off), input, sp);
 		break;
 	case Split:
 		off = (signed char)t.pc[1];
 		t.pc += 2;
-		addthread(l, thread(t.pc));
-		addthread(l, thread(t.pc + off));
+		addthread(l, thread(t.pc), input, sp);
+		addthread(l, thread(t.pc + off), input, sp);
 		break;
 	case RSplit:
 		off = (signed char)t.pc[1];
 		t.pc += 2;
-		addthread(l, thread(t.pc + off));
-		addthread(l, thread(t.pc));
+		addthread(l, thread(t.pc + off), input, sp);
+		addthread(l, thread(t.pc), input, sp);
 		break;
 	case Save:
 		off = (unsigned char)t.pc[1];
 		t.pc += 2;
-		addthread(l, thread(t.pc));
+		addthread(l, thread(t.pc), input, sp);
+		break;
+	case Bol:
+		if(sp == input->begin)
+			addthread(l, thread(t.pc + 1), input, sp);
+		break;
+	case Eol:
+		if(sp == input->end - 1)
+			addthread(l, thread(t.pc + 1), input, sp);
 		break;
 	}
 }
 
 int
-thompsonvm(ByteProg *prog, char *input, char *end, char **subp, int nsubp)
+thompsonvm(ByteProg *prog, Subject *input, char **subp, int nsubp)
 {
 	int i, len, matched;
 	ThreadList *clist, *nlist, *tmp;
@@ -83,14 +91,14 @@ thompsonvm(ByteProg *prog, char *input, char *end, char **subp, int nsubp)
 	nlist = threadlist(len);
 	
 	if(nsubp >= 1)
-		subp[0] = input;
+		subp[0] = input->begin;
 	cleanmarks(prog);
-	addthread(clist, thread(prog->start));
+	addthread(clist, thread(prog->start), input, input->begin);
 	matched = 0;
-	for(sp=input;; sp++) {
+	for(sp=input->begin;; sp++) {
 		if(clist->n == 0)
 			break;
-		// printf("%d(%02x).", (int)(sp - input), *sp & 0xFF);
+		// printf("%d(%02x).", (int)(sp - input->begin), *sp & 0xFF);
 		cleanmarks(prog);
 		for(i=0; i<clist->n; i++) {
 			pc = clist->t[i].pc;
@@ -98,7 +106,7 @@ thompsonvm(ByteProg *prog, char *input, char *end, char **subp, int nsubp)
 			if (inst_is_consumer(*pc & 0x7f)) {
 				// If we need to match a character, but there's none left,
 				// it's fail (we don't schedule current thread for continuation)
-				if(sp >= end)
+				if(sp >= input->end)
 					continue;
 			}
 			switch(*pc++ & 0x7f) {
@@ -106,7 +114,7 @@ thompsonvm(ByteProg *prog, char *input, char *end, char **subp, int nsubp)
 				if(*sp != *pc++)
 					break;
 			case Any:
-				addthread(nlist, thread(pc));
+				addthread(nlist, thread(pc), input, sp);
 				break;
 			case Match:
 				if(nsubp >= 2)
@@ -125,8 +133,8 @@ thompsonvm(ByteProg *prog, char *input, char *end, char **subp, int nsubp)
 		clist = nlist;
 		nlist = tmp;
 		nlist->n = 0;
-		if(*sp == '\0')
-			break;
+		//if(sp >= input->end)
+		//	break;
 	}
 	return matched;
 }
