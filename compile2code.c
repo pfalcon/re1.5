@@ -17,8 +17,13 @@ int size_code(const char *re)
         case '\\':
             re++;
         default:
-        case '?':
+            pc += 2;
+            break;
         case '+':
+            // Skip entire "+?"
+            if (re[1] == '?')
+                re++;
+        case '?':
             pc += 2;
             break;
         case '.':
@@ -27,6 +32,9 @@ int size_code(const char *re)
             pc++;
             break;
         case '*':
+            // Skip entire "*?"
+            if (re[1] == '?')
+                re++;
         case '|':
         case '(':
             pc += 4;
@@ -91,12 +99,22 @@ const char *_compile2code(const char *re, ByteProg *prog)
             EMIT(pc, Jmp);
             EMIT(pc + 1, REL(pc, term));
             pc += 2;
-            EMIT(term, Split);
+            if (re[1] == '?') {
+                EMIT(term, RSplit);
+                re++;
+            } else {
+                EMIT(term, Split);
+            }
             EMIT(term + 1, REL(term, pc));
             prog->len += 2;
             break;
         case '+':
-            EMIT(pc, RSplit);
+            if (re[1] == '?') {
+                EMIT(pc, Split);
+                re++;
+            } else {
+                EMIT(pc, RSplit);
+            }
             EMIT(pc + 1, REL(pc, term));
             pc += 2;
             prog->len++;
