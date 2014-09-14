@@ -41,7 +41,9 @@ main(int argc, char **argv)
 	printprog(prog);
 	printf("=============\n");
 	#endif
-	ByteProg *code = compile2code(argv[1]);
+	int sz = size_code(argv[1]);
+	ByteProg *code = malloc(sizeof(ByteProg) + sz);
+	compile2code(code, argv[1]);
 	#ifdef DEBUG
 	dump_code(code);
 	#endif

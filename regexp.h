@@ -52,10 +52,10 @@ struct Prog
 
 struct ByteProg
 {
-	char *start;
 	int bytelen;
 	int len;
 	int sub;
+	char insts[0];
 };
 
 struct Inst
@@ -125,6 +125,7 @@ int recursiveloopprog(ByteProg*, Subject*, char**, int);
 int recursiveprog(ByteProg*, Subject*, char**, int);
 int thompsonvm(ByteProg*, Subject*, char**, int);
 
-ByteProg *compile2code(char *re);
+int size_code(char *re);
+int compile2code(ByteProg *prog, char *re);
 void dump_code(ByteProg *prog);
 void cleanmarks(ByteProg *prog);

@@ -67,5 +67,5 @@ recursiveloop(char *pc, char *sp, Subject *input, char **subp, int nsubp)
 int
 recursiveloopprog(ByteProg *prog, Subject *input, char **subp, int nsubp)
 {
-	return recursiveloop(prog->start, input->begin, input, subp, nsubp);
+	return recursiveloop(prog->insts, input->begin, input, subp, nsubp);
 }

@@ -93,7 +93,7 @@ thompsonvm(ByteProg *prog, Subject *input, char **subp, int nsubp)
 	if(nsubp >= 1)
 		subp[0] = input->begin;
 	cleanmarks(prog);
-	addthread(clist, thread(prog->start), input, input->begin);
+	addthread(clist, thread(prog->insts), input, input->begin);
 	matched = 0;
 	for(sp=input->begin;; sp++) {
 		if(clist->n == 0)
@@ -102,7 +102,7 @@ thompsonvm(ByteProg *prog, Subject *input, char **subp, int nsubp)
 		cleanmarks(prog);
 		for(i=0; i<clist->n; i++) {
 			pc = clist->t[i].pc;
-			// printf(" %d", (int)(pc - prog->start));
+			// printf(" %d", (int)(pc - prog->insts));
 			if (inst_is_consumer(*pc & 0x7f)) {
 				// If we need to match a character, but there's none left,
 				// it's fail (we don't schedule current thread for continuation)

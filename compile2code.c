@@ -43,7 +43,7 @@ int size_code(char *re)
 
 char *_compile2code(char *re, ByteProg *prog)
 {
-    char *code = prog->start;
+    char *code = prog->insts;
     int pc = prog->bytelen;
     int start = pc;
     int term = pc;
@@ -130,39 +130,32 @@ char *_compile2code(char *re, ByteProg *prog)
     return re;
 }
 
-ByteProg *compile2code(char *re)
+int compile2code(ByteProg *prog, char *re)
 {
-    static ByteProg prog;
-    int sz = size_code(re);
-    #ifdef DEBUG
-    printf("size_code: Bytes: %d\n", sz);
-    #endif
+    prog->len = 0;
+    prog->bytelen = 0;
+    prog->sub = 0;
 
-    prog.start = malloc(sz);
-    prog.len = 0;
-    prog.bytelen = 0;
-    prog.sub = 0;
+    prog->insts[prog->bytelen++] = Save;
+    prog->insts[prog->bytelen++] = 0;
+    prog->len++;
 
-    prog.start[prog.bytelen++] = Save;
-    prog.start[prog.bytelen++] = 0;
-    prog.len++;
+    _compile2code(re, prog);
 
-    _compile2code(re, &prog);
+    prog->insts[prog->bytelen++] = Save;
+    prog->insts[prog->bytelen++] = 1;
+    prog->len++;
 
-    prog.start[prog.bytelen++] = Save;
-    prog.start[prog.bytelen++] = 1;
-    prog.len++;
+    prog->insts[prog->bytelen++] = Match;
+    prog->len++;
 
-    prog.start[prog.bytelen++] = Match;
-    prog.len++;
-
-    return &prog;
+    return 0;
 }
 
 void
 cleanmarks(ByteProg *prog)
 {
-       char *pc = prog->start;
+       char *pc = prog->insts;
        char *end = pc + prog->bytelen;
        while (pc < end) {
                *pc &= 0x7f;
@@ -182,7 +175,7 @@ cleanmarks(ByteProg *prog)
 void dump_code(ByteProg *prog)
 {
     int pc = 0;
-    char *code = prog->start;
+    char *code = prog->insts;
     while (pc < prog->bytelen) {
                 printf("%2d: ", pc);
                 switch(code[pc++]) {

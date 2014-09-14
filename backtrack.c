@@ -34,7 +34,7 @@ backtrack(ByteProg *prog, Subject *input, char **subp, int nsubp)
 	sub = newsub(nsubp);
 	for(i=0; i<nsubp; i++)
 		sub->sub[i] = nil;
-	ready[0] = thread(prog->start, input->begin, sub);
+	ready[0] = thread(prog->insts, input->begin, sub);
 	nready = 1;
 
 	/* run threads in stack order */

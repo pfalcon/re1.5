@@ -100,7 +100,7 @@ pikevm(ByteProg *prog, Subject *input, char **subp, int nsubp)
 	nlist = threadlist(len);
 	
 	cleanmarks(prog);
-	addthread(clist, thread(prog->start, sub), input, input->begin);
+	addthread(clist, thread(prog->insts, sub), input, input->begin);
 	matched = 0;
 	for(sp=input->begin;; sp++) {
 		if(clist->n == 0)
@@ -110,7 +110,7 @@ pikevm(ByteProg *prog, Subject *input, char **subp, int nsubp)
 		for(i=0; i<clist->n; i++) {
 			pc = clist->t[i].pc;
 			sub = clist->t[i].sub;
-			// printf(" %d", (int)(pc - prog->start));
+			// printf(" %d", (int)(pc - prog->insts));
 			if (inst_is_consumer(*pc & 0x7f)) {
 				// If we need to match a character, but there's none left,
 				// it's fail (we don't schedule current thread for continuation)
