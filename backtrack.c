@@ -8,25 +8,25 @@ typedef struct Thread Thread;
 struct Thread
 {
 	char *pc;
-	char *sp;
+	const char *sp;
 	Sub *sub;
 };
 
 static Thread
-thread(char *pc, char *sp, Sub *sub)
+thread(char *pc, const char *sp, Sub *sub)
 {
 	Thread t = {pc, sp, sub};
 	return t;
 }
 
 int
-backtrack(ByteProg *prog, Subject *input, char **subp, int nsubp)
+backtrack(ByteProg *prog, Subject *input, const char **subp, int nsubp)
 {
 	enum { MAX = 1000 };
 	Thread ready[MAX];
 	int i, nready;
 	char *pc;
-	char *sp;
+	const char *sp;
 	Sub *sub;
 	int off;
 

@@ -8,7 +8,7 @@ void insert_code(char *code, int at, int num, int *pc)
 
 #define REL(at, to) (to - at - 2)
 
-int size_code(char *re)
+int size_code(const char *re)
 {
     int pc = 5; // Save 0, Save 1, Match
 
@@ -41,7 +41,7 @@ int size_code(char *re)
 
 #define EMIT(at, byte) code[at] = byte
 
-char *_compile2code(char *re, ByteProg *prog)
+const char *_compile2code(const char *re, ByteProg *prog)
 {
     char *code = prog->insts;
     int pc = prog->bytelen;
@@ -130,7 +130,7 @@ char *_compile2code(char *re, ByteProg *prog)
     return re;
 }
 
-int compile2code(ByteProg *prog, char *re)
+int compile2code(ByteProg *prog, const char *re)
 {
     prog->len = 0;
     prog->bytelen = 0;

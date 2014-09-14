@@ -32,7 +32,7 @@ threadlist(int n)
 }
 
 static void
-addthread(ThreadList *l, Thread t, Subject *input, char *sp)
+addthread(ThreadList *l, Thread t, Subject *input, const char *sp)
 {
 	int off;
 	if(*t.pc & 0x80) {
@@ -80,12 +80,12 @@ addthread(ThreadList *l, Thread t, Subject *input, char *sp)
 }
 
 int
-pikevm(ByteProg *prog, Subject *input, char **subp, int nsubp)
+pikevm(ByteProg *prog, Subject *input, const char **subp, int nsubp)
 {
 	int i, len;
 	ThreadList *clist, *nlist, *tmp;
 	char *pc;
-	char *sp;
+	const char *sp;
 	Sub *sub, *matched;
 
 	matched = nil;	

@@ -105,27 +105,27 @@ struct Sub
 {
 	int ref;
 	int nsub;
-	char *sub[MAXSUB];
+	const char *sub[MAXSUB];
 };
 
 Sub *newsub(int n);
 Sub *incref(Sub*);
 Sub *copy(Sub*);
-Sub *update(Sub*, int, char*);
+Sub *update(Sub*, int, const char*);
 void decref(Sub*);
 
 struct Subject {
-	char *begin;
-	char *end;
+	const char *begin;
+	const char *end;
 };
 
-int backtrack(ByteProg*, Subject*, char**, int);
-int pikevm(ByteProg*, Subject*, char**, int);
-int recursiveloopprog(ByteProg*, Subject*, char**, int);
-int recursiveprog(ByteProg*, Subject*, char**, int);
-int thompsonvm(ByteProg*, Subject*, char**, int);
+int backtrack(ByteProg*, Subject*, const char**, int);
+int pikevm(ByteProg*, Subject*, const char**, int);
+int recursiveloopprog(ByteProg*, Subject*, const char**, int);
+int recursiveprog(ByteProg*, Subject*, const char**, int);
+int thompsonvm(ByteProg*, Subject*, const char**, int);
 
-int size_code(char *re);
-int compile2code(ByteProg *prog, char *re);
+int size_code(const char *re);
+int compile2code(ByteProg *prog, const char *re);
 void dump_code(ByteProg *prog);
 void cleanmarks(ByteProg *prog);

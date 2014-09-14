@@ -6,7 +6,7 @@
 
 struct {
 	char *name;
-	int (*fn)(ByteProg*, Subject*, char**, int);
+	int (*fn)(ByteProg*, Subject*, const char**, int);
 } tab[] = {
 	{"recursive", recursiveprog},
 	{"recursiveloop", recursiveloopprog},
@@ -49,7 +49,7 @@ main(int argc, char **argv)
 	#endif
 
 	int sub_els = (code->sub + 1) * 2;
-	char *sub[sub_els];
+	const char *sub[sub_els];
 	for(i=2; i<argc; i++) {
 		printf("#%d %s\n", i, argv[i]);
 		for(j=0; j<nelem(tab); j++) {

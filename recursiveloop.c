@@ -5,9 +5,9 @@
 #include "regexp.h"
 
 int
-recursiveloop(char *pc, char *sp, Subject *input, char **subp, int nsubp)
+recursiveloop(char *pc, const char *sp, Subject *input, const char **subp, int nsubp)
 {
-	char *old;
+	const char *old;
 	int off;
 	
 	for(;;) {
@@ -65,7 +65,7 @@ recursiveloop(char *pc, char *sp, Subject *input, char **subp, int nsubp)
 }
 
 int
-recursiveloopprog(ByteProg *prog, Subject *input, char **subp, int nsubp)
+recursiveloopprog(ByteProg *prog, Subject *input, const char **subp, int nsubp)
 {
 	return recursiveloop(prog->insts, input->begin, input, subp, nsubp);
 }

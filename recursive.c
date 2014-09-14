@@ -5,9 +5,9 @@
 #include "regexp.h"
 
 int
-recursive(char *pc, char *sp, Subject *input, char **subp, int nsubp)
+recursive(char *pc, const char *sp, Subject *input, const char **subp, int nsubp)
 {
-	char *old;
+	const char *old;
 	int off;
 
 	if(inst_is_consumer(*pc)) {
@@ -61,7 +61,7 @@ recursive(char *pc, char *sp, Subject *input, char **subp, int nsubp)
 }
 
 int
-recursiveprog(ByteProg *prog, Subject *input, char **subp, int nsubp)
+recursiveprog(ByteProg *prog, Subject *input, const char **subp, int nsubp)
 {
 	return recursive(prog->insts, input->begin, input, subp, nsubp);
 }
