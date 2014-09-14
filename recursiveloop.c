@@ -65,7 +65,7 @@ recursiveloop(char *pc, const char *sp, Subject *input, const char **subp, int n
 }
 
 int
-recursiveloopprog(ByteProg *prog, Subject *input, const char **subp, int nsubp)
+recursiveloopprog(ByteProg *prog, Subject *input, const char **subp, int nsubp, int is_anchored)
 {
-	return recursiveloop(prog->insts, input->begin, input, subp, nsubp);
+	return recursiveloop(HANDLE_ANCHORED(prog->insts, is_anchored), input->begin, input, subp, nsubp);
 }

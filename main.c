@@ -6,7 +6,7 @@
 
 struct {
 	char *name;
-	int (*fn)(ByteProg*, Subject*, const char**, int);
+	int (*fn)(ByteProg*, Subject*, const char**, int, int);
 } tab[] = {
 	{"recursive", recursiveprog},
 	{"recursiveloop", recursiveloopprog},
@@ -18,7 +18,7 @@ struct {
 void
 usage(void)
 {
-	fprintf(stderr, "usage: re regexp string...\n");
+	fprintf(stderr, "usage: re search|match <regexp> <string>...\n");
 	exit(2);
 }
 
@@ -28,12 +28,16 @@ main(int argc, char **argv)
 	int i, j, k, l;
 	Regexp *re;
 	Prog *prog;
+	int is_anchored = 0;
 
-	if(argc < 2)
+	if(argc < 3)
 		usage();
-	
+
+	if (*argv[1] == 'm')
+		is_anchored = 1;
+
 	#ifdef DEBUG
-	re = parse(argv[1]);
+	re = parse(argv[2]);
 	printre(re);
 	printf("\n");
 
@@ -41,22 +45,22 @@ main(int argc, char **argv)
 	printprog(prog);
 	printf("=============\n");
 	#endif
-	int sz = size_code(argv[1]);
+	int sz = size_code(argv[2]);
 	ByteProg *code = malloc(sizeof(ByteProg) + sz);
-	compile2code(code, argv[1]);
+	compile2code(code, argv[2]);
 	#ifdef DEBUG
 	dump_code(code);
 	#endif
 
 	int sub_els = (code->sub + 1) * 2;
 	const char *sub[sub_els];
-	for(i=2; i<argc; i++) {
+	for(i=3; i<argc; i++) {
 		printf("#%d %s\n", i, argv[i]);
 		for(j=0; j<nelem(tab); j++) {
 			Subject subj = {argv[i], argv[i] + strlen(argv[i])};
 			printf("%s ", tab[j].name);
 			memset(sub, 0, sub_els * sizeof sub[0]);
-			if(!tab[j].fn(code, &subj, sub, sub_els)) {
+			if(!tab[j].fn(code, &subj, sub, sub_els, is_anchored)) {
 				printf("-no match-\n");
 				continue;
 			}

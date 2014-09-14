@@ -76,7 +76,7 @@ addthread(ThreadList *l, Thread t, Subject *input, const char *sp)
 }
 
 int
-thompsonvm(ByteProg *prog, Subject *input, const char **subp, int nsubp)
+thompsonvm(ByteProg *prog, Subject *input, const char **subp, int nsubp, int is_anchored)
 {
 	int i, len, matched;
 	ThreadList *clist, *nlist, *tmp;
@@ -93,7 +93,7 @@ thompsonvm(ByteProg *prog, Subject *input, const char **subp, int nsubp)
 	if(nsubp >= 1)
 		subp[0] = input->begin;
 	cleanmarks(prog);
-	addthread(clist, thread(prog->insts), input, input->begin);
+	addthread(clist, thread(HANDLE_ANCHORED(prog->insts, is_anchored)), input, input->begin);
 	matched = 0;
 	for(sp=input->begin;; sp++) {
 		if(clist->n == 0)

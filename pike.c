@@ -80,7 +80,7 @@ addthread(ThreadList *l, Thread t, Subject *input, const char *sp)
 }
 
 int
-pikevm(ByteProg *prog, Subject *input, const char **subp, int nsubp)
+pikevm(ByteProg *prog, Subject *input, const char **subp, int nsubp, int is_anchored)
 {
 	int i, len;
 	ThreadList *clist, *nlist, *tmp;
@@ -100,7 +100,7 @@ pikevm(ByteProg *prog, Subject *input, const char **subp, int nsubp)
 	nlist = threadlist(len);
 	
 	cleanmarks(prog);
-	addthread(clist, thread(prog->insts, sub), input, input->begin);
+	addthread(clist, thread(HANDLE_ANCHORED(prog->insts, is_anchored), sub), input, input->begin);
 	matched = 0;
 	for(sp=input->begin;; sp++) {
 		if(clist->n == 0)

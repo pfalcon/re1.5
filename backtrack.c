@@ -20,7 +20,7 @@ thread(char *pc, const char *sp, Sub *sub)
 }
 
 int
-backtrack(ByteProg *prog, Subject *input, const char **subp, int nsubp)
+backtrack(ByteProg *prog, Subject *input, const char **subp, int nsubp, int is_anchored)
 {
 	enum { MAX = 1000 };
 	Thread ready[MAX];
@@ -34,7 +34,7 @@ backtrack(ByteProg *prog, Subject *input, const char **subp, int nsubp)
 	sub = newsub(nsubp);
 	for(i=0; i<nsubp; i++)
 		sub->sub[i] = nil;
-	ready[0] = thread(prog->insts, input->begin, sub);
+	ready[0] = thread(HANDLE_ANCHORED(prog->insts, is_anchored), input->begin, sub);
 	nready = 1;
 
 	/* run threads in stack order */

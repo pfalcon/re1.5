@@ -61,7 +61,7 @@ recursive(char *pc, const char *sp, Subject *input, const char **subp, int nsubp
 }
 
 int
-recursiveprog(ByteProg *prog, Subject *input, const char **subp, int nsubp)
+recursiveprog(ByteProg *prog, Subject *input, const char **subp, int nsubp, int is_anchored)
 {
-	return recursive(prog->insts, input->begin, input, subp, nsubp);
+	return recursive(HANDLE_ANCHORED(prog->insts, is_anchored), input->begin, input, subp, nsubp);
 }

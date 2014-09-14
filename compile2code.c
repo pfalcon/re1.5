@@ -10,7 +10,7 @@ void insert_code(char *code, int at, int num, int *pc)
 
 int size_code(const char *re)
 {
-    int pc = 5; // Save 0, Save 1, Match
+    int pc = 5 + NON_ANCHORED_PREFIX; // Save 0, Save 1, Match; more bytes for "search" (vs "match") prefix code
 
     for (; *re; re++) {
         switch (*re) {
@@ -153,6 +153,16 @@ int compile2code(ByteProg *prog, const char *re)
     prog->len = 0;
     prog->bytelen = 0;
     prog->sub = 0;
+
+    // Add code to implement non-anchored operation ("search"),
+    // for anchored operation ("match"), this code will be just skipped.
+    // TODO: Implement search in much more efficient manner
+    prog->insts[prog->bytelen++] = RSplit;
+    prog->insts[prog->bytelen++] = 3;
+    prog->insts[prog->bytelen++] = Any;
+    prog->insts[prog->bytelen++] = Jmp;
+    prog->insts[prog->bytelen++] = -5;
+    prog->len += 3;
 
     prog->insts[prog->bytelen++] = Save;
     prog->insts[prog->bytelen++] = 0;
