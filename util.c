@@ -5,15 +5,9 @@
 #include "regexp.h"
 
 void
-fatal(char *fmt, ...)
+fatal(char *msg)
 {
-	va_list arg;
-	
-	va_start(arg, fmt);
-	fprintf(stderr, "fatal error: ");
-	vfprintf(stderr, fmt, arg);
-	fprintf(stderr, "\n");
-	va_end(arg);
+	fprintf(stderr, "fatal error: %s\n", msg);
 	exit(2);
 }
 

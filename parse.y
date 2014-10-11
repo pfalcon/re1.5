@@ -128,7 +128,7 @@ yylex(void)
 static void
 yyerror(char *s)
 {
-	fatal("%s", s);
+	fatal(s);
 }
 
 

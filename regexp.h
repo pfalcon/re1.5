@@ -42,7 +42,7 @@ enum	/* Regexp.type */
 Regexp *parse(char*);
 Regexp *reg(int type, Regexp *left, Regexp *right);
 void printre(Regexp*);
-void fatal(char*, ...);
+void fatal(char*);
 void *mal(int);
 
 struct Prog
