@@ -3,6 +3,7 @@
 # license that can be found in the LICENSE file.
 
 CC=gcc
+# Add -DDEBUG to CFLAGS when developing/testing
 CFLAGS=-ggdb -Wall -Os
 
 TARG=re
