@@ -1,3 +1,7 @@
+// Copyright 2014 Paul Sokolovsky.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 #include "regexp.h"
 
 static void insert_code(char *code, int at, int num, int *pc)
