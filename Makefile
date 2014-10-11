@@ -16,6 +16,7 @@ OFILES=\
 	sub.o\
 	thompson.o\
 	compilecode.o\
+	dumpcode.o\
 	util.o\
 	y.tab.o\
 
