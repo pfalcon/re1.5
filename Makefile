@@ -15,7 +15,7 @@ OFILES=\
 	recursiveloop.o\
 	sub.o\
 	thompson.o\
-	compile2code.o\
+	compilecode.o\
 	util.o\
 	y.tab.o\
 

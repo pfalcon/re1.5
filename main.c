@@ -45,11 +45,11 @@ main(int argc, char **argv)
 	printprog(prog);
 	printf("=============\n");
 	#endif
-	int sz = size_code(argv[2]);
+	int sz = re1_5_sizecode(argv[2]);
 	ByteProg *code = malloc(sizeof(ByteProg) + sz);
-	compile2code(code, argv[2]);
+	re1_5_compilecode(code, argv[2]);
 	#ifdef DEBUG
-	dump_code(code);
+	re1_5_dumpcode(code);
 	#endif
 
 	int sub_els = (code->sub + 1) * 2;

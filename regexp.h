@@ -129,7 +129,7 @@ int recursiveloopprog(ByteProg*, Subject*, const char**, int, int);
 int recursiveprog(ByteProg*, Subject*, const char**, int, int);
 int thompsonvm(ByteProg*, Subject*, const char**, int, int);
 
-int size_code(const char *re);
-int compile2code(ByteProg *prog, const char *re);
-void dump_code(ByteProg *prog);
+int re1_5_sizecode(const char *re);
+int re1_5_compilecode(ByteProg *prog, const char *re);
+void re1_5_dumpcode(ByteProg *prog);
 void cleanmarks(ByteProg *prog);

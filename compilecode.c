@@ -1,6 +1,6 @@
 #include "regexp.h"
 
-void insert_code(char *code, int at, int num, int *pc)
+static void insert_code(char *code, int at, int num, int *pc)
 {
     memmove(code + at + num, code + at, *pc - at);
     *pc += num;
@@ -8,7 +8,7 @@ void insert_code(char *code, int at, int num, int *pc)
 
 #define REL(at, to) (to - at - 2)
 
-int size_code(const char *re)
+int re1_5_sizecode(const char *re)
 {
     int pc = 5 + NON_ANCHORED_PREFIX; // Save 0, Save 1, Match; more bytes for "search" (vs "match") prefix code
 
@@ -49,7 +49,7 @@ int size_code(const char *re)
 
 #define EMIT(at, byte) code[at] = byte
 
-const char *_compile2code(const char *re, ByteProg *prog)
+const char *_compilecode(const char *re, ByteProg *prog)
 {
     char *code = prog->insts;
     int pc = prog->bytelen;
@@ -80,7 +80,7 @@ const char *_compile2code(const char *re, ByteProg *prog)
             prog->len++;
 
             prog->bytelen = pc;
-            re = _compile2code(re + 1, prog);
+            re = _compilecode(re + 1, prog);
             pc = prog->bytelen;
 
             EMIT(pc++, Save);
@@ -148,7 +148,7 @@ const char *_compile2code(const char *re, ByteProg *prog)
     return re;
 }
 
-int compile2code(ByteProg *prog, const char *re)
+int re1_5_compilecode(ByteProg *prog, const char *re)
 {
     prog->len = 0;
     prog->bytelen = 0;
@@ -168,7 +168,7 @@ int compile2code(ByteProg *prog, const char *re)
     prog->insts[prog->bytelen++] = 0;
     prog->len++;
 
-    _compile2code(re, prog);
+    _compilecode(re, prog);
 
     prog->insts[prog->bytelen++] = Save;
     prog->insts[prog->bytelen++] = 1;
@@ -200,7 +200,7 @@ cleanmarks(ByteProg *prog)
 }
 
 #ifdef DEBUG
-void dump_code(ByteProg *prog)
+void re1_5_dumpcode(ByteProg *prog)
 {
     int pc = 0;
     char *code = prog->insts;
@@ -250,7 +250,7 @@ void dump_code(ByteProg *prog)
 int main(int argc, char *argv[])
 {
     int pc = 0;
-    ByteProg *code = compile2code(argv[1]);
-    dump_code(code);
+    ByteProg *code = re1_5_compilecode(argv[1]);
+    re1_5_dumpcode(code);
 }
 #endif
