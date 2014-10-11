@@ -32,7 +32,7 @@ count(Regexp *r)
 {
 	switch(r->type) {
 	default:
-		fatal("bad count");
+		re1_5_fatal("bad count");
 	case Alt:
 		return 2 + count(r->left) + count(r->right);
 	case Cat:
@@ -58,7 +58,7 @@ emit(Regexp *r)
 
 	switch(r->type) {
 	default:
-		fatal("bad emit");
+		re1_5_fatal("bad emit");
 
 	case Alt:
 		pc->opcode = Split;
@@ -154,7 +154,7 @@ printprog(Prog *p)
 	for(; pc < e; pc++) {
 		switch(pc->opcode) {
 		default:
-			fatal("printprog");
+			re1_5_fatal("printprog");
 		case Split:
 			printf("%2d. split %d, %d\n", (int)(pc-p->start), (int)(pc->x-p->start), (int)(pc->y-p->start));
 			break;

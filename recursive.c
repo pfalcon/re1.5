@@ -56,7 +56,7 @@ recursive(char *pc, const char *sp, Subject *input, const char **subp, int nsubp
 			return 0;
 		return recursive(pc, sp, input, subp, nsubp);
 	}
-	fatal("recursive");
+	re1_5_fatal("recursive");
 	return -1;
 }
 

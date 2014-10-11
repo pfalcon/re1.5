@@ -13,7 +13,7 @@ void re1_5_dumpcode(ByteProg *prog)
                 switch(code[pc++]) {
                 default:
                         assert(0);
-//                        fatal("printprog");
+//                        re1_5_fatal("printprog");
                 case Split:
                         printf("split %d (%d)\n", pc + (signed char)code[pc] + 1, (signed char)code[pc]);
                         pc++;

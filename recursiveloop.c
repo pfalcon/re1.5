@@ -60,7 +60,7 @@ recursiveloop(char *pc, const char *sp, Subject *input, const char **subp, int n
 				return 0;
 			continue;
 		}
-		fatal("recursiveloop");
+		re1_5_fatal("recursiveloop");
 	}
 }
 

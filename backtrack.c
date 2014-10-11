@@ -68,14 +68,14 @@ re1_5_backtrack(ByteProg *prog, Subject *input, const char **subp, int nsubp, in
 				continue;
 			case Split:
 				if(nready >= MAX)
-					fatal("backtrack overflow");
+					re1_5_fatal("backtrack overflow");
 				off = (signed char)*pc++;
 				ready[nready++] = thread(pc + off, sp, incref(sub));
 //				pc = pc->x;	/* continue current thread */
 				continue;
 			case RSplit:
 				if(nready >= MAX)
-					fatal("backtrack overflow");
+					re1_5_fatal("backtrack overflow");
 				off = (signed char)*pc++;
 				ready[nready++] = thread(pc, sp, incref(sub));
 				pc = pc + off;

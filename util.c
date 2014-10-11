@@ -5,7 +5,7 @@
 #include "regexp.h"
 
 void
-fatal(char *msg)
+re1_5_fatal(char *msg)
 {
 	fprintf(stderr, "fatal error: %s\n", msg);
 	exit(2);
@@ -18,7 +18,7 @@ mal(int n)
 	
 	v = malloc(n);
 	if(v == nil)
-		fatal("out of memory");
+		re1_5_fatal("out of memory");
 	memset(v, 0, n);
 	return v;
 }	
