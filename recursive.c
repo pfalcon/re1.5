@@ -4,7 +4,7 @@
 
 #include "regexp.h"
 
-int
+static int
 recursive(char *pc, const char *sp, Subject *input, const char **subp, int nsubp)
 {
 	const char *old;
@@ -61,7 +61,7 @@ recursive(char *pc, const char *sp, Subject *input, const char **subp, int nsubp
 }
 
 int
-recursiveprog(ByteProg *prog, Subject *input, const char **subp, int nsubp, int is_anchored)
+re1_5_recursiveprog(ByteProg *prog, Subject *input, const char **subp, int nsubp, int is_anchored)
 {
 	return recursive(HANDLE_ANCHORED(prog->insts, is_anchored), input->begin, input, subp, nsubp);
 }

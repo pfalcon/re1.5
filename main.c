@@ -8,11 +8,11 @@ struct {
 	char *name;
 	int (*fn)(ByteProg*, Subject*, const char**, int, int);
 } tab[] = {
-	{"recursive", recursiveprog},
-	{"recursiveloop", recursiveloopprog},
-	{"backtrack", backtrack},
-	{"thompson", thompsonvm},
-	{"pike", pikevm},
+	{"recursive", re1_5_recursiveprog},
+	{"recursiveloop", re1_5_recursiveloopprog},
+	{"backtrack", re1_5_backtrack},
+	{"thompson", re1_5_thompsonvm},
+	{"pike", re1_5_pikevm},
 };
 
 void

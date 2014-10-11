@@ -76,7 +76,7 @@ addthread(ThreadList *l, Thread t, Subject *input, const char *sp)
 }
 
 int
-thompsonvm(ByteProg *prog, Subject *input, const char **subp, int nsubp, int is_anchored)
+re1_5_thompsonvm(ByteProg *prog, Subject *input, const char **subp, int nsubp, int is_anchored)
 {
 	int i, len, matched;
 	ThreadList *clist, *nlist, *tmp;

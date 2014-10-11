@@ -80,7 +80,7 @@ addthread(ThreadList *l, Thread t, Subject *input, const char *sp)
 }
 
 int
-pikevm(ByteProg *prog, Subject *input, const char **subp, int nsubp, int is_anchored)
+re1_5_pikevm(ByteProg *prog, Subject *input, const char **subp, int nsubp, int is_anchored)
 {
 	int i, len;
 	ThreadList *clist, *nlist, *tmp;

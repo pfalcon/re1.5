@@ -20,7 +20,7 @@ thread(char *pc, const char *sp, Sub *sub)
 }
 
 int
-backtrack(ByteProg *prog, Subject *input, const char **subp, int nsubp, int is_anchored)
+re1_5_backtrack(ByteProg *prog, Subject *input, const char **subp, int nsubp, int is_anchored)
 {
 	enum { MAX = 1000 };
 	Thread ready[MAX];

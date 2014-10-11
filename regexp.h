@@ -123,11 +123,11 @@ struct Subject {
 #define NON_ANCHORED_PREFIX 5
 #define HANDLE_ANCHORED(bytecode, is_anchored) ((is_anchored) ? (bytecode) + NON_ANCHORED_PREFIX : (bytecode))
 
-int backtrack(ByteProg*, Subject*, const char**, int, int);
-int pikevm(ByteProg*, Subject*, const char**, int, int);
-int recursiveloopprog(ByteProg*, Subject*, const char**, int, int);
-int recursiveprog(ByteProg*, Subject*, const char**, int, int);
-int thompsonvm(ByteProg*, Subject*, const char**, int, int);
+int re1_5_backtrack(ByteProg*, Subject*, const char**, int, int);
+int re1_5_pikevm(ByteProg*, Subject*, const char**, int, int);
+int re1_5_recursiveloopprog(ByteProg*, Subject*, const char**, int, int);
+int re1_5_recursiveprog(ByteProg*, Subject*, const char**, int, int);
+int re1_5_thompsonvm(ByteProg*, Subject*, const char**, int, int);
 
 int re1_5_sizecode(const char *re);
 int re1_5_compilecode(ByteProg *prog, const char *re);
