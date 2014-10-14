@@ -80,14 +80,18 @@ enum	/* Inst.opcode */
 	CONSUMERS = 1,
 	Char = CONSUMERS,
 	Any,
+	Class,
+
 	ASSERTS = 0x50,
 	Bol = ASSERTS,
 	Eol,
+
 	// Instructions which take relative offset as arg
 	JUMPS = 0x60,
 	Jmp = JUMPS,
 	Split,
 	RSplit,
+
 	// Other (special) instructions
 	Save = 0x7e,
 	Match = 0x7f,

@@ -49,6 +49,10 @@ main(int argc, char **argv)
 	#ifdef DEBUG
 	printf("Precalculated size: %d\n", sz);
 	#endif
+	if (sz == -1) {
+		re1_5_fatal("Error in regexp");
+	}
+
 	ByteProg *code = malloc(sizeof(ByteProg) + sz);
 	re1_5_compilecode(code, argv[2]);
 	#ifdef DEBUG
