@@ -92,6 +92,8 @@ re1_5_backtrack(ByteProg *prog, Subject *input, const char **subp, int nsubp, in
 				if(sp != input->end)
 					goto Dead;
 				continue;
+			default:
+				re1_5_fatal("backtrack");
 			}
 		}
 	Dead:
