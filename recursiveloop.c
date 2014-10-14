@@ -23,6 +23,12 @@ recursiveloop(char *pc, const char *sp, Subject *input, const char **subp, int n
 		case Any:
 			sp++;
 			continue;
+		case Class:
+			if (!_re1_5_classmatch(pc, sp))
+				return 0;
+			pc += *(unsigned char*)pc * 2 + 1;
+			sp++;
+			continue;
 		case Match:
 			return 1;
 		case Jmp:

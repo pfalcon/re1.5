@@ -18,6 +18,7 @@ OFILES=\
 	thompson.o\
 	compilecode.o\
 	dumpcode.o\
+	charclass.o\
 	util.o\
 	y.tab.o\
 

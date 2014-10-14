@@ -114,8 +114,14 @@ re1_5_thompsonvm(ByteProg *prog, Subject *input, const char **subp, int nsubp, i
 				if(*sp != *pc++)
 					break;
 			case Any:
+			addthread:
 				addthread(nlist, thread(pc), input, sp);
 				break;
+			case Class:
+				if (!_re1_5_classmatch(pc, sp))
+					break;
+				pc += *(unsigned char*)pc * 2 + 1;
+				goto addthread;
 			case Match:
 				if(nsubp >= 2)
 					subp[1] = sp;

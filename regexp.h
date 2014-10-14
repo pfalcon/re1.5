@@ -143,5 +143,6 @@ int re1_5_sizecode(const char *re);
 int re1_5_compilecode(ByteProg *prog, const char *re);
 void re1_5_dumpcode(ByteProg *prog);
 void cleanmarks(ByteProg *prog);
+int _re1_5_classmatch(const char *pc, const char *sp);
 
 #endif /*_RE1_5_REGEXP__H*/
