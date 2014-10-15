@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 %{
-#include "regexp.h"
+#include "re1.5.h"
 
 static int yylex(void);
 static void yyerror(char*);

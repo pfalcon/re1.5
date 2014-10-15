@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #ifdef DEBUG
 
-#include "regexp.h"
+#include "re1.5.h"
 
 static Inst *pc;
 static int count(Regexp*);

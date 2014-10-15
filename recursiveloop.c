@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-#include "regexp.h"
+#include "re1.5.h"
 
 static int
 recursiveloop(char *pc, const char *sp, Subject *input, const char **subp, int nsubp)

@@ -1,4 +1,4 @@
-#include "regexp.h"
+#include "re1.5.h"
 
 int _re1_5_classmatch(const char *pc, const char *sp)
 {
