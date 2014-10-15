@@ -35,7 +35,7 @@ avoid name clashes when integrating into other projects.
 TODO
 ====
 
-* Support for character classes [ ], special classes like \d.
+* Support for special character classes like \d.
 * Support for repetition operator {n} and {n,m}.
 * Support for Unicode (UTF-8).
 * Support for matching flags like case-insensitive, dot matches all,
