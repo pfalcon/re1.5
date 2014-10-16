@@ -23,6 +23,7 @@ recursive(char *pc, const char *sp, Subject *input, const char **subp, int nsubp
 	case Any:
 		return recursive(pc, sp+1, input, subp, nsubp);
 	case Class:
+	case ClassNot:
 		if (!_re1_5_classmatch(pc, sp))
 			return 0;
 		pc += *(unsigned char*)pc * 2 + 1;

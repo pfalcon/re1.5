@@ -130,6 +130,7 @@ re1_5_pikevm(ByteProg *prog, Subject *input, const char **subp, int nsubp, int i
 				addthread(nlist, thread(pc, sub), input, sp+1);
 				break;
 			case Class:
+			case ClassNot:
 				if (!_re1_5_classmatch(pc, sp)) {
 					decref(sub);
 					break;

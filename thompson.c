@@ -118,6 +118,7 @@ re1_5_thompsonvm(ByteProg *prog, Subject *input, const char **subp, int nsubp, i
 				addthread(nlist, thread(pc), input, sp);
 				break;
 			case Class:
+			case ClassNot:
 				if (!_re1_5_classmatch(pc, sp))
 					break;
 				pc += *(unsigned char*)pc * 2 + 1;

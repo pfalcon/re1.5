@@ -58,6 +58,7 @@ re1_5_backtrack(ByteProg *prog, Subject *input, const char **subp, int nsubp, in
 				sp++;
 				continue;
 			case Class:
+			case ClassNot:
 				if (!_re1_5_classmatch(pc, sp))
 					goto Dead;
 				pc += *(unsigned char*)pc * 2 + 1;
