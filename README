@@ -31,11 +31,11 @@ avoid name clashes when integrating into other projects.
 * Support for quoted chars in regex.
 * Support for ^, $ assertions in regex.
 * Support for "match" vs "search" operations, as common in other regex APIs.
+* Support for named character classes: \d \D \s \S \w \W.
 
 TODO
 ====
 
-* Support for special character classes like \d.
 * Support for repetition operator {n} and {n,m}.
 * Support for Unicode (UTF-8).
 * Support for matching flags like case-insensitive, dot matches all,
