@@ -60,8 +60,11 @@ def main():
             py_res = (py_res.group(0),) + py_res.groups()
 
         # run our code
-        re_res = subprocess.check_output([RE_EXEC, kind, regex, string])
-        re_res = re_res.split(b'\n')[1:-1] # split lines, remove first and last
+        try:
+            re_res = subprocess.check_output([RE_EXEC, kind, regex, string])
+            re_res = re_res.split(b'\n')[1:-1] # split lines, remove first and last
+        except subprocess.CalledProcessError:
+            re_res = []
 
         # check result of each engine
         for engine in re_res:
@@ -71,7 +74,7 @@ def main():
             except KeyError:
                 engine_stats[engine_name] = stats = [0, 0]
             if py_res == re_res:
-                print("PASS ", end="")
+                print("pass ", end="")
                 stats[0] += 1
             else:
                 print("FAIL ", end="")
