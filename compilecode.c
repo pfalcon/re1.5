@@ -20,6 +20,14 @@ int re1_5_sizecode(const char *re)
         switch (*re) {
         case '\\':
             re++;
+            if ((*re | 0x20) == 'd') {
+                pc += 2;
+            } else if ((*re | 0x20) == 's') {
+                pc += 4;
+            } else if ((*re | 0x20) == 'w') {
+                pc += 8;
+            }
+            // Fall through to add an extra 2 to pc
         default:
             pc += 2;
             break;
@@ -76,8 +84,35 @@ const char *_compilecode(const char *re, ByteProg *prog)
 
     for (; *re && *re != ')'; re++) {
         switch (*re) {
-        case '\\':
+        case '\\': {
             re++;
+            // Handle named character classes
+            int re_lower = *re | 0x20;
+            if (re_lower == 'd' || re_lower == 's' || re_lower == 'w') {
+                term = pc;
+                if (*re & 0x20) {
+                    EMIT(pc++, Class); // lower case is normal class
+                } else {
+                    EMIT(pc++, ClassNot); // upper case is negated class
+                }
+                const char *data;
+                int len;
+                if (re_lower == 'd') {
+                    data = "\x01\x30\x39";
+                    len = 3;
+                } else if (re_lower == 's') {
+                    data = "\x02  \t\r";
+                    len = 5;
+                } else {
+                    data = "\x04\x61zAZ09__";
+                    len = 9;
+                }
+                memcpy(code + pc, data, len);
+                pc += len;
+                prog->len++;
+                break;
+            }
+        }
         default:
             term = pc;
             EMIT(pc++, Char);
