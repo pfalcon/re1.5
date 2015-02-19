@@ -78,6 +78,13 @@ const char *_compilecode(const char *re, ByteProg *prog)
         switch (*re) {
         case '\\':
             re++;
+            if ((*re | 0x20) == 'd' || (*re | 0x20) == 's' || (*re | 0x20) == 'w') {
+                term = pc;
+                EMIT(pc++, NamedClass);
+                EMIT(pc++, *re);
+                prog->len++;
+                break;
+            }
         default:
             term = pc;
             EMIT(pc++, Char);
