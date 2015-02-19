@@ -64,6 +64,12 @@ re1_5_backtrack(ByteProg *prog, Subject *input, const char **subp, int nsubp, in
 				pc += *(unsigned char*)pc * 2 + 1;
 				sp++;
 				continue;
+			case NamedClass:
+				if (!_re1_5_namedclassmatch(pc, sp))
+					goto Dead;
+				pc++;
+				sp++;
+				continue;
 			case Match:
 				for(i=0; i<nsubp; i++)
 					subp[i] = sub->sub[i];

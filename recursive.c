@@ -28,6 +28,10 @@ recursive(char *pc, const char *sp, Subject *input, const char **subp, int nsubp
 			return 0;
 		pc += *(unsigned char*)pc * 2 + 1;
 		return recursive(pc, sp+1, input, subp, nsubp);
+	case NamedClass:
+		if (!_re1_5_namedclassmatch(pc, sp))
+			return 0;
+		return recursive(pc+1, sp+1, input, subp, nsubp);
 	case Match:
 		return 1;
 	case Jmp:
