@@ -54,7 +54,10 @@ main(int argc, char **argv)
 	}
 
 	ByteProg *code = malloc(sizeof(ByteProg) + sz);
-	re1_5_compilecode(code, argv[2]);
+	int ret = re1_5_compilecode(code, argv[2]);
+        if (ret != 0) {
+		re1_5_fatal("Error in regexp");
+	}
 	#ifdef DEBUG
 	re1_5_dumpcode(code);
 	#endif

@@ -26,9 +26,18 @@ test_suite = [
     ("match", r"(\w+)\s+(\w+)", "ABC \t123hello456 abc"),
     ("match", r"(\S+)\s+(\D+)", "ABC \thello abc456 abc"),
     ("match", r"(([0-9]*)([a-z]*)\d*)", "123hello456"),
+
+    # errors
+    ("search", r"?", ""),
+    ("search", r"*", ""),
+    ("search", r"+", ""),
+    ("search", r"[", ""),
+    ("search", r"(", ""),
+    ("search", r")", ""),
 ]
 
 import re
+import sre_constants
 import subprocess
 from collections import OrderedDict
 
@@ -36,6 +45,8 @@ def parse_result(string, res):
     name, rest = res.split(b" ", 1)
     if rest == b"-no match-":
         return name, None
+    if rest == b"REGEX ERROR":
+        return name, rest
     assert rest.startswith(b"match ")
     rest = rest[6:]
     tuples = [eval(t) for t in rest.split()]
@@ -52,19 +63,25 @@ def main():
     engine_stats = OrderedDict()
     for kind, regex, string in test_suite:
         # run Python re to get correct result
-        if kind == "match":
-            py_res = re.match(regex, string)
-        else:
-            py_res = re.search(regex, string)
-        if py_res is not None:
-            py_res = (py_res.group(0),) + py_res.groups()
+        try:
+            if kind == "match":
+                py_res = re.match(regex, string)
+            else:
+                py_res = re.search(regex, string)
+            if py_res is not None:
+                py_res = (py_res.group(0),) + py_res.groups()
+        except sre_constants.error:
+            py_res = b"REGEX ERROR"
 
         # run our code
         try:
-            re_res = subprocess.check_output([RE_EXEC, kind, regex, string])
+            re_res = subprocess.check_output([RE_EXEC, kind, regex, string], stderr=subprocess.STDOUT)
             re_res = re_res.split(b'\n')[1:-1] # split lines, remove first and last
-        except subprocess.CalledProcessError:
-            re_res = []
+        except subprocess.CalledProcessError as e:
+            if e.returncode == 2 and e.output == b"fatal error: Error in regexp\n":
+                re_res = [b"recursive REGEX ERROR", b"recursiveloop REGEX ERROR", b"backtrack REGEX ERROR", b"thompson REGEX ERROR", b"pike REGEX ERROR"]
+            else:
+                raise
 
         # check result of each engine
         for engine in re_res:
