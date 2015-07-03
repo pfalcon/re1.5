@@ -19,6 +19,13 @@ test_suite = [
     ("match", r"(([0-9]*)([a-z]*)[0-9]*)", "1234hello567"),
     ("match", r"([0-9]*)(([a-z]*)([0-9]*))", "1234hello567"),
 
+    # non-capturing groups
+    ("match", r"(([0-9]*)(?:[a-z]*)[0-9]*)", "1234hello568"),
+    ("match", r"(?:[0-9]*)(([a-z]*)(?:[0-9]*))", "1234hello568"),
+    ("match", r"([0-9]*)(?:([a-z]*)(?:[0-9]*))", "1234hello568"),
+    ("match", r"(?:)", "1234hello568"),
+    ("match", r"1?:", "1:"),
+
     # named character classes
     ("match", r"\d+", "123abc456"),
     ("match", r"\s+", " \t123abc456"),
@@ -26,6 +33,10 @@ test_suite = [
     ("match", r"(\w+)\s+(\w+)", "ABC \t123hello456 abc"),
     ("match", r"(\S+)\s+(\D+)", "ABC \thello abc456 abc"),
     ("match", r"(([0-9]*)([a-z]*)\d*)", "123hello456"),
+
+    # escaped metacharacters
+    ("match", r"(\?:)", ":"),
+    ("match", r"\(?:", "(:"),
 
     # errors
     ("search", r"?", ""),

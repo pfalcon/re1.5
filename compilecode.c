@@ -121,20 +121,28 @@ static const char *_compilecode(const char *re, ByteProg *prog)
         }
         case '(': {
             term = pc;
-            int sub = ++prog->sub;
+            int sub;
+            int capture = re[1] != '?' || re[2] != ':';
 
-            EMIT(pc++, Save);
-            EMIT(pc++, 2 * sub);
-            prog->len++;
+            if (capture) {
+                    sub = ++prog->sub;
+                    EMIT(pc++, Save);
+                    EMIT(pc++, 2 * sub);
+                    prog->len++;
+            } else {
+                    re += 2;
+            }
 
             prog->bytelen = pc;
             re = _compilecode(re + 1, prog);
             if (re == NULL || *re != ')') return NULL; // error, or no matching paren
             pc = prog->bytelen;
 
-            EMIT(pc++, Save);
-            EMIT(pc++, 2 * sub + 1);
-            prog->len++;
+            if (capture) {
+                    EMIT(pc++, Save);
+                    EMIT(pc++, 2 * sub + 1);
+                    prog->len++;
+            }
 
             break;
         }
