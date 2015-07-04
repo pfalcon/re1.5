@@ -23,7 +23,7 @@ OFILES=\
 	y.tab.o\
 
 HFILES=\
-	regexp.h\
+	re1.5.h\
 
 re: $(OFILES)
 	$(CC) -o re $(OFILES)
