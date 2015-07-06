@@ -86,7 +86,8 @@ def main():
 
         # run our code
         try:
-            re_res = subprocess.check_output([RE_EXEC, kind, regex, string], stderr=subprocess.STDOUT)
+            args = (["-m"] if kind == "match" else []) + [regex, string]
+            re_res = subprocess.check_output([RE_EXEC]+args, stderr=subprocess.STDOUT)
             re_res = re_res.split(b'\n')[1:-1] # split lines, remove first and last
         except subprocess.CalledProcessError as e:
             if e.returncode == 2 and e.output == b"fatal error: Error in regexp\n":
