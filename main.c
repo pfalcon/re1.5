@@ -26,8 +26,6 @@ int
 main(int argc, char **argv)
 {
 	int i, j, k, l;
-	Regexp *re;
-	Prog *prog;
 	int is_anchored = 0;
 
 	if(argc < 3)
@@ -36,12 +34,12 @@ main(int argc, char **argv)
 	if (*argv[1] == 'm')
 		is_anchored = 1;
 
-	#ifdef DEBUG
-	re = parse(argv[2]);
+	#ifdef ODEBUG
+	Regexp *re = parse(argv[2]);
 	printre(re);
 	printf("\n");
 
-	prog = compile(re);
+	Prog *prog = compile(re);
 	printprog(prog);
 	printf("=============\n");
 	#endif
