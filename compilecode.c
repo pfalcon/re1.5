@@ -6,69 +6,16 @@
 
 static void insert_code(char *code, int at, int num, int *pc)
 {
-    memmove(code + at + num, code + at, *pc - at);
+    if (code) memmove(code + at + num, code + at, *pc - at);
     *pc += num;
 }
 
 #define REL(at, to) (to - at - 2)
+#define EMIT(at, byte) (sizecode ? (void)(at) : (code[at] = byte))
 
-int re1_5_sizecode(const char *re)
+static const char *_compilecode(const char *re, ByteProg *prog, int sizecode)
 {
-    int pc = 5 + NON_ANCHORED_PREFIX; // Save 0, Save 1, Match; more bytes for "search" (vs "match") prefix code
-
-    for (; *re; re++) {
-        switch (*re) {
-        case '\\':
-            re++;
-        default:
-            pc += 2;
-            break;
-        case '+':
-            // Skip entire "+?"
-            if (re[1] == '?')
-                re++;
-        case '?':
-            pc += 2;
-            break;
-        case '.':
-        case '^':
-        case '$':
-            pc++;
-            break;
-        case '*':
-            // Skip entire "*?"
-            if (re[1] == '?')
-                re++;
-        case '|':
-        case '(':
-            pc += 4;
-            break;
-        case ')':
-            break;
-        case '[': {
-            pc += 2;
-            re++;
-            if (*re == '^') re++;
-            while (*re != ']') {
-                if (!*re) return -1;
-                if (re[1] == '-') {
-                    re += 2;
-                }
-                pc += 2;
-                re++;
-            }
-        }
-        }
-    }
-
-    return pc;
-}
-
-#define EMIT(at, byte) code[at] = byte
-
-static const char *_compilecode(const char *re, ByteProg *prog)
-{
-    char *code = prog->insts;
+    char *code = sizecode ? NULL : prog->insts;
     int pc = prog->bytelen;
     int start = pc;
     int term = pc;
@@ -134,7 +81,7 @@ static const char *_compilecode(const char *re, ByteProg *prog)
             }
 
             prog->bytelen = pc;
-            re = _compilecode(re + 1, prog);
+            re = _compilecode(re + 1, prog, sizecode);
             if (re == NULL || *re != ')') return NULL; // error, or no matching paren
             pc = prog->bytelen;
 
@@ -209,6 +156,18 @@ static const char *_compilecode(const char *re, ByteProg *prog)
     return re;
 }
 
+int re1_5_sizecode(const char *re)
+{
+    ByteProg dummyprog = {
+         // Save 0, Save 1, Match; more bytes for "search" (vs "match") prefix code
+        .bytelen = 5 + NON_ANCHORED_PREFIX
+    };
+
+    if (_compilecode(re, &dummyprog, /*sizecode*/1) == NULL) return -1;
+
+    return dummyprog.bytelen;
+}
+
 int re1_5_compilecode(ByteProg *prog, const char *re)
 {
     prog->len = 0;
@@ -229,7 +188,7 @@ int re1_5_compilecode(ByteProg *prog, const char *re)
     prog->insts[prog->bytelen++] = 0;
     prog->len++;
 
-    re = _compilecode(re, prog);
+    re = _compilecode(re, prog, /*sizecode*/0);
     if (re == NULL || *re) return 1;
 
     prog->insts[prog->bytelen++] = Save;

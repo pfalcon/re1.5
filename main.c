@@ -15,10 +15,22 @@ struct {
 	{"pike", re1_5_pikevm},
 };
 
+#ifdef DEBUG
+int debug;
+#endif
+const char *re_engine;
+
 void
 usage(void)
 {
-	fprintf(stderr, "usage: re search|match <regexp> <string>...\n");
+	fprintf(stderr, "Usage: re [-hmd] [-e ENGINE] <regexp> <string>...\n"
+	        "-h:        Print help message and exit\n"
+	        "-m:        String is anchored\n"
+	        "-e ENGINE: Specify one of: recursive recursiveloop backtrack thompson pike\n");
+#ifdef DEBUG
+	fprintf(stderr,
+		"-d:        Print debug messages\n");
+#endif
 	exit(2);
 }
 
@@ -26,48 +38,83 @@ int
 main(int argc, char **argv)
 {
 	int i, j, k, l;
-	Regexp *re;
-	Prog *prog;
 	int is_anchored = 0;
 
-	if(argc < 3)
+	argv++;
+	argc--;
+	while (argc > 0 && argv[0][0] == '-') {
+		for (char *arg = &argv[0][1]; *arg; arg++) {
+			switch (*arg) {
+				case 'h':
+					usage();
+					break;
+				case 'm':
+					is_anchored = 1;
+					break;
+#ifdef DEBUG
+				case 'd':
+					debug = 1;
+					break;
+#endif
+				case 'e':
+					if (argv[1] == NULL)
+						re1_5_fatal("-e: Missing Regex engine argument");
+					if (re_engine)
+						re1_5_fatal("-e: Regex engine already specified");
+					re_engine = argv[1];
+					argv++;
+					argc--;
+					break;
+				default:
+					re1_5_fatal("Unknown flag");
+			}
+		}
+		argv++;
+		argc--;
+	}
+
+	if(argc < 2)
 		usage();
 
-	if (*argv[1] == 'm')
-		is_anchored = 1;
-
-	#ifdef DEBUG
-	re = parse(argv[2]);
+#ifdef ODEBUG
+	// Old and unmaintained code
+	Regexp *re = parse(argv[0]);
 	printre(re);
 	printf("\n");
 
-	prog = compile(re);
+	Prog *prog = compile(re);
 	printprog(prog);
 	printf("=============\n");
-	#endif
-	int sz = re1_5_sizecode(argv[2]);
-	#ifdef DEBUG
-	printf("Precalculated size: %d\n", sz);
-	#endif
+#endif
+	int sz = re1_5_sizecode(argv[0]);
+#ifdef DEBUG
+	if (debug) printf("Precalculated size: %d\n", sz);
+#endif
 	if (sz == -1) {
 		re1_5_fatal("Error in regexp");
 	}
 
 	ByteProg *code = malloc(sizeof(ByteProg) + sz);
-	int ret = re1_5_compilecode(code, argv[2]);
+	int ret = re1_5_compilecode(code, argv[0]);
         if (ret != 0) {
 		re1_5_fatal("Error in regexp");
 	}
-	#ifdef DEBUG
-	re1_5_dumpcode(code);
-	#endif
 
 	int sub_els = (code->sub + 1) * 2;
+#ifdef DEBUG
+	if (debug) re1_5_dumpcode(code);
+#endif
 	const char *sub[sub_els];
-	for(i=3; i<argc; i++) {
+	int engine_found = 0;
+	for(i=1; i<argc; i++) {
 		printf("#%d %s\n", i, argv[i]);
 		for(j=0; j<nelem(tab); j++) {
 			Subject subj = {argv[i], argv[i] + strlen(argv[i])};
+			if (re_engine) {
+				if (0 != strcmp(re_engine, tab[j].name))
+					continue;
+				engine_found = 1;
+			}
 			printf("%s ", tab[j].name);
 			memset(sub, 0, sub_els * sizeof sub[0]);
 			if(!tab[j].fn(code, &subj, sub, sub_els, is_anchored)) {
@@ -93,6 +140,10 @@ main(int argc, char **argv)
 			}
 			printf("\n");
 		}
+		if (re_engine && !engine_found)
+			re1_5_fatal("-e: Unknown engine name");
 	}
+
+	free(code);
 	return 0;
 }
