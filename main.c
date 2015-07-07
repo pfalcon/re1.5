@@ -43,7 +43,8 @@ main(int argc, char **argv)
 	argv++;
 	argc--;
 	while (argc > 0 && argv[0][0] == '-') {
-		for (char *arg = &argv[0][1]; *arg; arg++) {
+		char *arg;
+		for (arg = &argv[0][1]; *arg; arg++) {
 			switch (*arg) {
 				case 'h':
 					usage();
