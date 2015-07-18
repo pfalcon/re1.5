@@ -19,6 +19,7 @@ OFILES=\
 	compilecode.o\
 	dumpcode.o\
 	charclass.o\
+	cleanmarks.o\
 	util.o\
 	y.tab.o\
 

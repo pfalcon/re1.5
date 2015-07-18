@@ -194,25 +194,6 @@ int re1_5_compilecode(ByteProg *prog, const char *re)
     return 0;
 }
 
-void
-cleanmarks(ByteProg *prog)
-{
-    char *pc = prog->insts;
-    char *end = pc + prog->bytelen;
-    while (pc < end) {
-        *pc &= 0x7f;
-        switch (*pc) {
-        case Jmp:
-        case Split:
-        case RSplit:
-        case Save:
-        case Char:
-                pc++;
-        }
-        pc++;
-    }
-}
-
 #if 0
 int main(int argc, char *argv[])
 {
