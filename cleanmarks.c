@@ -17,7 +17,7 @@ cleanmarks(ByteProg *prog)
         case RSplit:
         case Save:
         case Char:
-                pc++;
+            pc++;
         }
         pc++;
     }
