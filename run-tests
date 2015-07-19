@@ -34,6 +34,11 @@ test_suite = [
     ("match", r"(\S+)\s+(\D+)", "ABC \thello abc456 abc"),
     ("match", r"(([0-9]*)([a-z]*)\d*)", "123hello456"),
 
+    # classes
+    ("match", r"[a]*", "a"),
+    ("search", r"([yab]*)(e*)([cd])", "xyac"),
+    ("search", r"([yab]*)(e*)([^y]?)$", "xyac"),
+
     # escaped metacharacters
     ("match", r"(\?:)", ":"),
     ("match", r"\(?:", "(:"),
