@@ -21,6 +21,7 @@ static const char *_compilecode(const char *re, ByteProg *prog, int sizecode)
         switch (*re) {
         case '\\':
             re++;
+            if (!*re) return NULL; // Trailing backslash
             if ((*re | 0x20) == 'd' || (*re | 0x20) == 's' || (*re | 0x20) == 'w') {
                 term = PC;
                 EMIT(PC++, NamedClass);
