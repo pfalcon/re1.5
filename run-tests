@@ -108,7 +108,17 @@ def main():
                 stats = engine_stats[engine_name]
             except KeyError:
                 engine_stats[engine_name] = stats = [0, 0]
-            if py_res == re_res:
+
+            # Thompson algo offers just boolean match/no match status
+            py_res_cur = py_res
+            re_res_cur = re_res
+            if engine_name == b"thompson":
+                if py_res is not None:
+                    py_res_cur = True
+                if re_res is not None:
+                    re_res_cur = True
+
+            if py_res_cur == re_res_cur:
                 print("pass ", end="")
                 stats[0] += 1
             else:
