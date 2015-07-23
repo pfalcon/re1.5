@@ -91,7 +91,12 @@ static const char *_compilecode(const char *re, ByteProg *prog, int sizecode)
         case '?':
             if (PC == term) return NULL; // nothing to repeat
             INSERT_CODE(term, 2, PC);
-            EMIT(term, Split);
+            if (re[1] == '?') {
+                EMIT(term, RSplit);
+                re++;
+            } else {
+                EMIT(term, Split);
+            }
             EMIT(term + 1, REL(term, PC));
             prog->len++;
             break;
