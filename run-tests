@@ -115,7 +115,7 @@ def main():
                 print("FAIL ", end="")
                 stats[1] += 1
 
-        print("%-25s %-20s" % (fit_str(regex, 25), fit_str(string, 20)))
+        print("%s %-25s %-20s" % (kind[0], fit_str(regex, 25), fit_str(string, 20)))
 
     print("Ran %d tests, results:" % len(test_suite))
     for name, stats in engine_stats.items():
