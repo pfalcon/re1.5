@@ -15,6 +15,10 @@ test_suite = [
     ("match", r"abc", "abcdef"),
     ("match", r"abc*", "abdef"),
 
+    # search vs match distinction
+    ("match", r"a*", "baa"),
+    ("search", r"a*", "baa"),
+
     # nested group matching
     ("match", r"(([0-9]*)([a-z]*)[0-9]*)", "1234hello567"),
     ("match", r"([0-9]*)(([a-z]*)([0-9]*))", "1234hello567"),
