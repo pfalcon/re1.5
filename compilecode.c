@@ -69,10 +69,10 @@ static const char *_compilecode(const char *re, ByteProg *prog, int sizecode)
             int capture = re[1] != '?' || re[2] != ':';
 
             if (capture) {
-                    sub = ++prog->sub;
-                    EMIT(PC++, Save);
-                    EMIT(PC++, 2 * sub);
-                    prog->len++;
+                sub = ++prog->sub;
+                EMIT(PC++, Save);
+                EMIT(PC++, 2 * sub);
+                prog->len++;
             } else {
                     re += 2;
             }
@@ -81,9 +81,9 @@ static const char *_compilecode(const char *re, ByteProg *prog, int sizecode)
             if (re == NULL || *re != ')') return NULL; // error, or no matching paren
 
             if (capture) {
-                    EMIT(PC++, Save);
-                    EMIT(PC++, 2 * sub + 1);
-                    prog->len++;
+                EMIT(PC++, Save);
+                EMIT(PC++, 2 * sub + 1);
+                prog->len++;
             }
 
             break;
