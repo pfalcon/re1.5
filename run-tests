@@ -65,6 +65,9 @@ test_suite = [
     ("search", r"(", ""),
     ("search", r")", ""),
     ("search", "\\", ""),
+    ("search", "|+", ""),
+    ("search", "|*", ""),
+    ("search", "|?", ""),
 ]
 
 import re

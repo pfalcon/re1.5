@@ -137,6 +137,7 @@ static const char *_compilecode(const char *re, ByteProg *prog, int sizecode)
             EMIT(start, Split);
             EMIT(start + 1, REL(start, PC));
             prog->len += 2;
+            term = PC;
             break;
         case '^':
             EMIT(PC++, Bol);
