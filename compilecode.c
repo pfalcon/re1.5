@@ -99,6 +99,7 @@ static const char *_compilecode(const char *re, ByteProg *prog, int sizecode)
             }
             EMIT(term + 1, REL(term, PC));
             prog->len++;
+            term = PC;
             break;
         case '*':
             if (PC == term) return NULL; // nothing to repeat
@@ -114,6 +115,7 @@ static const char *_compilecode(const char *re, ByteProg *prog, int sizecode)
             }
             EMIT(term + 1, REL(term, PC));
             prog->len += 2;
+            term = PC;
             break;
         case '+':
             if (PC == term) return NULL; // nothing to repeat
@@ -126,6 +128,7 @@ static const char *_compilecode(const char *re, ByteProg *prog, int sizecode)
             EMIT(PC + 1, REL(PC, term));
             PC += 2;
             prog->len++;
+            term = PC;
             break;
         case '|':
             if (alt_label) {
