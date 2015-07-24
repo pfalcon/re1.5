@@ -68,6 +68,8 @@ test_suite = [
     ("search", "|+", ""),
     ("search", "|*", ""),
     ("search", "|?", ""),
+    ("search", "^*", ""),
+    ("search", "$*", ""),
 ]
 
 import re

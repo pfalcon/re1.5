@@ -142,10 +142,12 @@ static const char *_compilecode(const char *re, ByteProg *prog, int sizecode)
         case '^':
             EMIT(PC++, Bol);
             prog->len++;
+            term = PC;
             break;
         case '$':
             EMIT(PC++, Eol);
             prog->len++;
+            term = PC;
             break;
         }
     }
