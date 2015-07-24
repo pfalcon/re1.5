@@ -46,12 +46,12 @@ test_suite = [
     # escaped metacharacters
     ("match", r"(\?:)", ":"),
     ("match", r"\(?:", "(:"),
-     
+
     # non-greedy
     ("match", r"a(b??)(b*)c", "abbc"),
     ("match", r"a(b+?)(b*)c", "abbbc"),
     ("match", r"a(b*?)(b*)c", "abbbbc"),
-    
+
     # greedy
     ("match", r"a(b?)(b*)c", "abbc"),
     ("match", r"a(b+)(b*)c", "abbbc"),
