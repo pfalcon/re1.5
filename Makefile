@@ -35,5 +35,8 @@ re: $(OFILES)
 y.tab.h y.tab.c: parse.y
 	bison -v -y parse.y
 
+test: $(TARG)
+	./run-tests $(TFLAGS)
+
 clean:
 	rm -f *.o core re y.tab.[ch] y.output
