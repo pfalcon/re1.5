@@ -8,7 +8,7 @@ CFLAGS=-g -Wall -Os
 # Comment out when developing/testing
 #CFLAGS=-DDEBUG -g -Wall -O0
 
-TARG=re
+TARGET=re
 OFILES=\
 	backtrack.o\
 	compile.o\
@@ -28,8 +28,8 @@ OFILES=\
 HFILES=\
 	re1.5.h\
 
-re: $(OFILES)
-	$(CC) -o re $(OFILES)
+$(TARGET): $(OFILES)
+	$(CC) -o $(TARGET) $(OFILES)
 
 %.o: %.c $(HFILES)
 	$(CC) -c $(CFLAGS) $*.c
@@ -37,8 +37,8 @@ re: $(OFILES)
 y.tab.h y.tab.c: parse.y
 	bison -v -y parse.y
 
-test: $(TARG)
+test: $(TARGET)
 	./run-tests $(TFLAGS)
 
 clean:
-	rm -f *.o core re y.tab.[ch] y.output
+	rm -f *.o core $(TARGET) y.tab.[ch] y.output
