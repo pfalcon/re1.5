@@ -3,8 +3,10 @@
 # license that can be found in the LICENSE file.
 
 CC=gcc
-# Add -DDEBUG to CFLAGS when developing/testing
+
 CFLAGS=-g -Wall -Os
+# Comment out when developing/testing
+#CFLAGS=-DDEBUG -g -Wall -O0
 
 TARG=re
 OFILES=\
