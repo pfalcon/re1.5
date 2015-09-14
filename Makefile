@@ -4,7 +4,7 @@
 
 CC=gcc
 # Add -DDEBUG to CFLAGS when developing/testing
-CFLAGS=-ggdb -Wall -Os
+CFLAGS=-g -Wall -Os
 
 TARG=re
 OFILES=\
