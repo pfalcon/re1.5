@@ -56,6 +56,14 @@ static const char *_compilecode(const char *re, ByteProg *prog, int sizecode)
                 if (!*re) return NULL;
                 EMIT(PC++, *re);
                 if (re[1] == '-') {
+                    if (re[2] == ']') {
+                        EMIT(PC++, *re);
+                        re += 1;
+                        cnt += 1;
+                        EMIT(PC++, *re);
+                        EMIT(PC++, *re);
+                        break;
+                    }
                     re += 2;
                 }
                 EMIT(PC++, *re);
@@ -65,7 +73,7 @@ static const char *_compilecode(const char *re, ByteProg *prog, int sizecode)
         }
         case '(': {
             term = PC;
-            int sub;
+            int sub = 0;
             int capture = re[1] != '?' || re[2] != ':';
 
             if (capture) {
