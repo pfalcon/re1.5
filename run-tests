@@ -42,6 +42,13 @@ test_suite = [
     ("match", r"[a]*", "a"),
     ("search", r"([yab]*)(e*)([cd])", "xyac"),
     ("search", r"([yab]*)(e*)([^y]?)$", "xyac"),
+    ("match", r"[-]*", "--"),
+    ("match", r"[-a]*", "-a-b"),
+    ("match", r"[-ab]*", "-a-b"),
+    ("match", r"[-a-c]*", "-a-b-d-"),
+    ("match", r"[a-]*", "-a-b"),
+    ("match", r"[ab-]*", "-a-b"),
+    ("match", r"[a-c-]*", "-a-b-d-"),
 
     # escaped metacharacters
     ("match", r"(\?:)", ":"),
