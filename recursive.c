@@ -16,6 +16,8 @@ recursive(char *pc, const char *sp, Subject *input, const char **subp, int nsubp
 			return 0;
 	}
 
+	re1_5_stack_chk();
+
 	switch(*pc++) {
 	case Char:
 		if(*sp != *pc++)
