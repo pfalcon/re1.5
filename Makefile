@@ -29,7 +29,7 @@ HFILES=\
 	re1.5.h\
 
 $(TARGET): $(OFILES)
-	$(CC) -o $(TARGET) $(OFILES)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OFILES)
 
 %.o: %.c $(HFILES)
 	$(CC) -c $(CFLAGS) $*.c
