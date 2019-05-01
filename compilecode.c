@@ -1,4 +1,4 @@
-// Copyright 2014 Paul Sokolovsky.
+// Copyright 2014-2019 Paul Sokolovsky.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
@@ -10,8 +10,9 @@
 #define EMIT(at, byte) (code ? (code[at] = byte) : (void)(at))
 #define PC (prog->bytelen)
 
-static const char *_compilecode(const char *re, ByteProg *prog, int sizecode)
+static int _compilecode(const char **re_loc, ByteProg *prog, int sizecode)
 {
+    const char *re = *re_loc;
     char *code = sizecode ? NULL : prog->insts;
     int start = PC;
     int term = PC;
@@ -21,7 +22,7 @@ static const char *_compilecode(const char *re, ByteProg *prog, int sizecode)
         switch (*re) {
         case '\\':
             re++;
-            if (!*re) return NULL; // Trailing backslash
+            if (!*re) goto syntax_error; // Trailing backslash
             if ((*re | 0x20) == 'd' || (*re | 0x20) == 's' || (*re | 0x20) == 'w') {
                 term = PC;
                 EMIT(PC++, NamedClass);
@@ -53,7 +54,7 @@ static const char *_compilecode(const char *re, ByteProg *prog, int sizecode)
             PC++; // Skip # of pair byte
             prog->len++;
             for (cnt = 0; *re != ']'; re++, cnt++) {
-                if (!*re) return NULL;
+                if (!*re) goto syntax_error;
                 EMIT(PC++, *re);
                 if (re[1] == '-' && re[2] != ']') {
                     re += 2;
@@ -77,8 +78,11 @@ static const char *_compilecode(const char *re, ByteProg *prog, int sizecode)
                     re += 2;
             }
 
-            re = _compilecode(re + 1, prog, sizecode);
-            if (re == NULL || *re != ')') return NULL; // error, or no matching paren
+            re++;
+            int res = _compilecode(&re, prog, sizecode);
+            *re_loc = re;
+            if (res < 0) return res;
+            if (*re != ')') return RE1_5_SYNTAX_ERROR;
 
             if (capture) {
                 EMIT(PC++, Save);
@@ -89,7 +93,7 @@ static const char *_compilecode(const char *re, ByteProg *prog, int sizecode)
             break;
         }
         case '?':
-            if (PC == term) return NULL; // nothing to repeat
+            if (PC == term) goto syntax_error; // nothing to repeat
             INSERT_CODE(term, 2, PC);
             if (re[1] == '?') {
                 EMIT(term, RSplit);
@@ -102,7 +106,7 @@ static const char *_compilecode(const char *re, ByteProg *prog, int sizecode)
             term = PC;
             break;
         case '*':
-            if (PC == term) return NULL; // nothing to repeat
+            if (PC == term) goto syntax_error; // nothing to repeat
             INSERT_CODE(term, 2, PC);
             EMIT(PC, Jmp);
             EMIT(PC + 1, REL(PC, term));
@@ -118,7 +122,7 @@ static const char *_compilecode(const char *re, ByteProg *prog, int sizecode)
             term = PC;
             break;
         case '+':
-            if (PC == term) return NULL; // nothing to repeat
+            if (PC == term) goto syntax_error; // nothing to repeat
             if (re[1] == '?') {
                 EMIT(PC, Split);
                 re++;
@@ -158,7 +162,17 @@ static const char *_compilecode(const char *re, ByteProg *prog, int sizecode)
     if (alt_label) {
         EMIT(alt_label, REL(alt_label, PC) + 1);
     }
-    return re;
+
+    *re_loc = re;
+    return RE1_5_SUCCESS;
+
+syntax_error:
+    *re_loc = re;
+    return RE1_5_SYNTAX_ERROR;
+
+unsupported_escape:
+    *re_loc = re;
+    return RE1_5_UNSUPPORTED_ESCAPE;
 }
 
 int re1_5_sizecode(const char *re)
@@ -168,7 +182,10 @@ int re1_5_sizecode(const char *re)
         .bytelen = 5 + NON_ANCHORED_PREFIX
     };
 
-    if (_compilecode(re, &dummyprog, /*sizecode*/1) == NULL) return -1;
+    int res = _compilecode(&re, &dummyprog, /*sizecode*/1);
+    if (res < 0) return res;
+    // If unparsed chars left
+    if (*re) return RE1_5_SYNTAX_ERROR;
 
     return dummyprog.bytelen;
 }
@@ -193,8 +210,10 @@ int re1_5_compilecode(ByteProg *prog, const char *re)
     prog->insts[prog->bytelen++] = 0;
     prog->len++;
 
-    re = _compilecode(re, prog, /*sizecode*/0);
-    if (re == NULL || *re) return 1;
+    int res = _compilecode(&re, prog, /*sizecode*/0);
+    if (res < 0) return res;
+    // If unparsed chars left
+    if (*re) return RE1_5_SYNTAX_ERROR;
 
     prog->insts[prog->bytelen++] = Save;
     prog->insts[prog->bytelen++] = 1;
@@ -203,7 +222,7 @@ int re1_5_compilecode(ByteProg *prog, const char *re)
     prog->insts[prog->bytelen++] = Match;
     prog->len++;
 
-    return 0;
+    return RE1_5_SUCCESS;
 }
 
 #if 0
