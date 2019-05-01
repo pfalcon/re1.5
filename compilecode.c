@@ -51,7 +51,7 @@ static int _compilecode(const char **re_loc, ByteProg *prog, int sizecode)
             } else {
                 EMIT(PC++, Class);
             }
-            PC++; // Skip # of pair byte
+            PC++; // Skip "# of pairs" byte
             prog->len++;
             for (cnt = 0; *re != ']'; re++, cnt++) {
                 if (!*re) goto syntax_error;
@@ -196,8 +196,8 @@ int re1_5_compilecode(ByteProg *prog, const char *re)
     prog->bytelen = 0;
     prog->sub = 0;
 
-    // Add code to implement non-anchored operation ("search"),
-    // for anchored operation ("match"), this code will be just skipped.
+    // Add code to implement non-anchored operation ("search").
+    // For anchored operation ("match"), this code will be just skipped.
     // TODO: Implement search in much more efficient manner
     prog->insts[prog->bytelen++] = RSplit;
     prog->insts[prog->bytelen++] = 3;
