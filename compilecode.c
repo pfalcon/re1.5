@@ -20,16 +20,21 @@ static int _compilecode(const char **re_loc, ByteProg *prog, int sizecode)
 
     for (; *re && *re != ')'; re++) {
         switch (*re) {
-        case '\\':
+        case '\\': {
             re++;
             if (!*re) goto syntax_error; // Trailing backslash
-            if ((*re | 0x20) == 'd' || (*re | 0x20) == 's' || (*re | 0x20) == 'w') {
+            char c = *re | 0x20;
+            if (c == 'd' || c == 's' || c == 'w') {
                 term = PC;
                 EMIT(PC++, NamedClass);
                 EMIT(PC++, *re);
                 prog->len++;
                 break;
             }
+            if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z')) {
+                goto unsupported_escape;
+            }
+        }
         default:
             term = PC;
             EMIT(PC++, Char);
