@@ -60,6 +60,11 @@ static int _compilecode(const char **re_loc, ByteProg *prog, int sizecode)
             prog->len++;
             for (cnt = 0; *re != ']'; re++, cnt++) {
                 if (!*re) goto syntax_error;
+                if (*re == '\\') {
+                    re++;
+                    if (!*re) goto syntax_error;
+                    if (*re != '\\' && *re != ']') goto unsupported_escape;
+                }
                 EMIT(PC++, *re);
                 if (re[1] == '-' && re[2] != ']') {
                     re += 2;
