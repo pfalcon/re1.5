@@ -102,6 +102,9 @@ static int _compilecode(const char **re_loc, ByteProg *prog, int sizecode)
 
             break;
         }
+        case '{':
+            *re_loc = re;
+            return RE1_5_UNSUPPORTED_SYNTAX;
         case '?':
             if (PC == term) goto syntax_error; // nothing to repeat
             INSERT_CODE(term, 2, PC);
