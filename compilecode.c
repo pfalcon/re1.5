@@ -77,18 +77,26 @@ static int _compilecode(const char **re_loc, ByteProg *prog, int sizecode)
         case '(': {
             term = PC;
             int sub;
-            int capture = re[1] != '?' || re[2] != ':';
+            int capture = 1;
+            re++;
+            if (*re == '?') {
+                re++;
+                if (*re == ':') {
+                    capture = 0;
+                    re++;
+                } else {
+                    *re_loc = re;
+                    return RE1_5_UNSUPPORTED_SYNTAX;
+                }
+            }
 
             if (capture) {
                 sub = ++prog->sub;
                 EMIT(PC++, Save);
                 EMIT(PC++, 2 * sub);
                 prog->len++;
-            } else {
-                    re += 2;
             }
 
-            re++;
             int res = _compilecode(&re, prog, sizecode);
             *re_loc = re;
             if (res < 0) return res;
